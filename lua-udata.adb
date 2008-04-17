@@ -1,9 +1,5 @@
 -- Lua userdata handling
 
-with ada.text_io;
-use ada.text_io;
-with system.address_to_access_conversions;
-
 package body lua.udata is
   
   function lua_newuserdata (ls: lua.state; size: lua.ic.size_t) return system.address;
@@ -39,7 +35,7 @@ package body lua.udata is
 
   function get (ls: lua.state; index: integer := 1) return t is
     use system;
-    sa: system.address := lua_touserdata (ls, lua.lua_int (index));
+    sa: constant system.address := lua_touserdata (ls, lua.lua_int (index));
   begin
     return convert.to_pointer (sa).all;
   end get;

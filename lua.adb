@@ -1,22 +1,28 @@
 -- Lua API
 
-with ada.unchecked_conversion, ada.text_io, system.address_to_access_conversions;
-use ada.text_io;
+with ada.text_io;
 with ada.exceptions;
+use ada.text_io;
 
 package body lua is
 
-  function lua_open return state;
-  pragma import (c, lua_open, "lua_open");
+  function luext_version return ics.chars_ptr;
+  pragma import (c, luext_version, "luext_version");
+
+  function luext_version_num return lua_int;
+  pragma import (c, luext_version_num, "luext_version_num");
+
+  function luext_release return ics.chars_ptr;
+  pragma import (c, luext_release, "luext_release");
+
+  function luaL_newstate return state;
+  pragma import (c, luaL_newstate, "luaL_newstate");
 
   procedure lua_close (ls: state);
   pragma import (c, lua_close, "lua_close");
 
   function lua_newthread (ls: state) return state;
   pragma import (c, lua_newthread, "lua_newthread");
-
-  function lua_version return ics.chars_ptr;
-  pragma import (c, lua_version, "lua_version");
 
   function lua_gettop (ls: state) return lua_int;
   pragma import (c, lua_gettop, "lua_gettop");
@@ -76,8 +82,8 @@ package body lua is
   function lua_tonumber (ls: state; index: lua_int) return lua_number;
   pragma import (c, lua_tonumber, "lua_tonumber");
 
-  function lua_tostring (ls: state; index: lua_int) return ics.chars_ptr;
-  pragma import (c, lua_tostring, "lua_tostring");
+  function luext_tostring (ls: state; index: lua_int) return ics.chars_ptr;
+  pragma import (c, luext_tostring, "luext_tostring");
 
   function lua_strlen (ls: state; index: lua_int) return lua_int;
   pragma import (c, lua_strlen, "lua_strlen");
@@ -132,8 +138,8 @@ package body lua is
   pragma import (c, lua_pcall, "lua_pcall");
 
   -- table functions
-  procedure lua_newtable (ls: state);
-  pragma import (c, lua_newtable, "lua_newtable");
+  procedure lua_createtable (ls: state; num_arr: lua_int; num_rec: lua_int);
+  pragma import (c, lua_createtable, "lua_createtable");
 
   procedure lua_settable (ls: state; index: lua_int);
   pragma import (c, lua_settable, "lua_settable");
@@ -185,7 +191,7 @@ package body lua is
   -- state manipulation
   function open return state is
   begin
-    return lua_open;
+    return luaL_newstate;
   end open;
 
   procedure close (ls: state)  is
@@ -286,7 +292,7 @@ package body lua is
     x: ics.chars_ptr;
     use ics;
   begin
-    x := lua_tostring (ls, lua_int (index));
+    x := luext_tostring (ls, lua_int (index));
     if x /= ics.null_ptr then return ics.value (x); else return ""; end if;
   end to_string;
 
@@ -297,17 +303,17 @@ package body lua is
 
   function is_equal (ls: state; index1, index2: integer) return boolean is
   begin
-    return lua_equal (ls, lua_int (index1), lua_int (index2))/=0;
+    return lua_equal (ls, lua_int (index1), lua_int (index2)) /= 0;
   end is_equal;
 
   function is_raw_equal (ls: state; index1, index2: integer) return boolean is
   begin
-    return lua_rawequal (ls, lua_int (index1), lua_int (index2))/=0;
+    return lua_rawequal (ls, lua_int (index1), lua_int (index2)) /= 0;
   end is_raw_equal;
 
   function is_less_than (ls: state; index1, index2: integer) return boolean is
   begin
-    return lua_lessthan (ls, lua_int (index1), lua_int (index2))/=0;
+    return lua_lessthan (ls, lua_int (index1), lua_int (index2)) /= 0;
   end is_less_than;
 
   -- push functions (ada -> stack)
@@ -410,7 +416,7 @@ package body lua is
 
   procedure new_table (ls: state) is
   begin
-     lua_newtable (ls);
+     lua_createtable (ls, 0, 0);
   end new_table;
 
   procedure raw_set_int (ls: state; index: integer; element: integer) is
@@ -423,15 +429,15 @@ package body lua is
   pragma import (c, lua_resume, "lua_resume");
 
   function ret_error (e: error_type; s: string) return error_message is
-    pragma inline (ret_error);
-    z: string := error_messages (e).all & s;
+    z: constant string := error_messages (e).all & s;
   begin
     return (z'length, e, z);
   end ret_error;
+  pragma inline (ret_error);
 
   function resume (ls: state; num_args: integer) return error_message is
     error: error_type;
-    ndx: lua_int := lua_gettop (ls) - lua_int (num_args);
+    ndx: constant lua_int := lua_gettop (ls) - lua_int (num_args);
   begin
     push_string (ls, "_traceback");
     lua_rawget (ls, globalsindex);
@@ -456,12 +462,12 @@ package body lua is
     lua_settable (ls, globalsindex);
   end;
 
-  function  lua_load (ls: state; reader: chunk_reader; data: ics.chars_ptr; chunk_name: ics.chars_ptr) return lua_int;
+  function lua_load (ls: state; reader: chunk_reader; data: ics.chars_ptr; chunk_name: ics.chars_ptr) return lua_int;
   pragma import (c, lua_load, "lua_load");
 
   function traced_call (ls: state; num_arguments, num_results: integer) return error_message is
     error: error_type;
-    ndx: lua_int := lua_gettop (ls) - lua_int (num_arguments);
+    ndx: constant lua_int := lua_gettop (ls) - lua_int (num_arguments);
   begin
     push_string (ls, "_traceback");
     lua_rawget (ls, globalsindex);
@@ -479,9 +485,9 @@ package body lua is
   end traced_call;
   pragma inline (traced_call);
 
-  function  protected_call (ls: state; num_arguments, num_results, error_func: integer := 0) return error_message is
+  function protected_call (ls: state; num_arguments, num_results, error_func: integer := 0) return error_message is
     error: error_type;
-    ndx: lua_int := lua_gettop (ls) - lua_int (num_arguments);
+    ndx: constant lua_int := lua_gettop (ls) - lua_int (num_arguments);
   begin
     error := error_type'val (lua_pcall (ls, lua_int (num_arguments), lua_int (num_results), lua_int (error_func)));
     if error /= lua_error_none then
@@ -526,7 +532,7 @@ package body lua is
   end dereference;
 
   function string_reader (ls: state; data: ics.chars_ptr; size: access ic.size_t) return ics.chars_ptr is
-    temp: ics.chars_ptr := ics.new_string (ics.value (data));
+    temp: constant ics.chars_ptr := ics.new_string (ics.value (data));
     use ic;
   begin
     size.all := ics.strlen (data);
@@ -545,7 +551,7 @@ package body lua is
     if error = lua_error_none then
       return traced_call (ls, 0, 0);
     else
-      return ret_error (lua_error_syntax, ics.value (lua_tostring (ls, -1)));
+      return ret_error (lua_error_syntax, ics.value (luext_tostring (ls, -1)));
     end if;
   end execute_string;
 
@@ -558,7 +564,7 @@ package body lua is
     open (f, in_file, file_name);
     while not end_of_file (f) loop
       get_line (f, s, n);
-      append (z, s (1..n) & ascii.lf);
+      append (z, s (1 .. n) & ascii.lf);
     end loop;
     close (f);
     return execute_string (ls, to_string (z), file_name);
@@ -566,7 +572,17 @@ package body lua is
 
   function version return string is
   begin
-     return ics.value (lua_version);
+    return ics.value (luext_version);
   end version;
+
+  function version return integer is
+  begin
+    return integer (luext_version_num);
+  end version;
+
+  function release return string is
+  begin
+    return ics.value (luext_release);
+  end release;
 
 end lua;

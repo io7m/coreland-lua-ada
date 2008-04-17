@@ -42,6 +42,9 @@ package lua is
   type state is private;
   type debug_structure is private;
 
+  state_error: constant state;
+
+  -- these types must match the integer types defined in your lua implementation
   type lua_int is new ic.int;
   subtype lua_natural is lua_int range 0 .. lua_int'last;
   subtype lua_number is ic.double;
@@ -153,8 +156,8 @@ package lua is
   function reference (ls: state; table: integer) return object_reference;
   procedure unreference (ls: state; table: integer; ref: object_reference);
 
-  pragma import (c, reference, "lual_ref");
-  pragma import (c, unreference, "lual_unref");
+  pragma import (c, reference, "luaL_ref");
+  pragma import (c, unreference, "luaL_unref");
 
   function reference (ls: state) return object_reference;
   procedure unreference (ls: state; ref: object_reference);
@@ -177,7 +180,10 @@ package lua is
   procedure error (ls: state);
   pragma no_return (error);
 
+  -- versioning
   function version return string;
+  function release return string;
+  function version return integer;
 
   -- debug hooks
   type mask is mod 16;
@@ -195,6 +201,7 @@ package lua is
 
   type state is new system.address;
   type debug_structure is new system.address;
+  state_error: constant state := state (system.null_address);
 
   str_traceback: constant ics.chars_ptr := ics.new_string("_traceback");
 
