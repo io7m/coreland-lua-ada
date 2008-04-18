@@ -21,4 +21,6 @@ package lua.lib is
   procedure open_math   (ls: lua.state);
   procedure open_debug  (ls: lua.state);
 
+  procedure open_libs (ls: lua.state);
+
 end lua.lib;

@@ -49,12 +49,14 @@ package lua is
   subtype lua_natural is lua_int range 0 .. lua_int'last;
   subtype lua_number is ic.double;
 
-  registryindex: constant lua_int := -10_000;
-  globalsindex:  constant lua_int := -10_001;
+  registryindex: constant lua_int := -10000;
+  environindex:  constant lua_int := -10001;
+  globalsindex:  constant lua_int := -10002;
   multret:       constant lua_int := -1;
 
-  registry_index: constant integer := -10_000;
-  globals_index:  constant integer := -10_001;
+  registry_index: constant integer := -10000;
+  environ_index:  constant integer := -10001;
+  globals_index:  constant integer := -10002;
   mult_ret:       constant integer := -1;
 
   type user_function is access function (ls: state) return lua_int;

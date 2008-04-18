@@ -134,7 +134,8 @@ package body lua is
   procedure lua_call (ls: in state; num_args: in lua_int; num_results: in lua_int);
   pragma import (c, lua_call, "lua_call");
 
-  function lua_pcall (ls: in state; num_args: in lua_int; num_results: in lua_int; error_f: in lua_int) return lua_int;
+  function lua_pcall (ls: in state; num_args: in lua_int; num_results: in lua_int;
+    error_f: in lua_int) return lua_int;
   pragma import (c, lua_pcall, "lua_pcall");
 
   -- table functions
@@ -450,8 +451,10 @@ package body lua is
       return no_error;
     end if;
   exception
-    when damned_error: others =>
-      return ret_error (lua_exception, "exception while doing lua.traced_call:" & ascii.lf & ascii.cr & ada.exceptions.exception_information (damned_error));
+    when err: others =>
+      return ret_error (lua_exception, "exception while doing lua.traced_call:"
+        & ascii.lf & ascii.cr
+        & ada.exceptions.exception_information (err));
   end resume;
 
   -- misc
@@ -462,17 +465,22 @@ package body lua is
     lua_settable (ls, globalsindex);
   end;
 
-  function lua_load (ls: state; reader: chunk_reader; data: ics.chars_ptr; chunk_name: ics.chars_ptr) return lua_int;
+  function lua_load (ls: state; reader: chunk_reader; data: ics.chars_ptr;
+    chunk_name: ics.chars_ptr) return lua_int;
   pragma import (c, lua_load, "lua_load");
 
-  function traced_call (ls: state; num_arguments, num_results: integer) return error_message is
+  function traced_call (ls: state; num_arguments, num_results: integer)
+    return error_message is
     error: error_type;
     ndx: constant lua_int := lua_gettop (ls) - lua_int (num_arguments);
   begin
     push_string (ls, "_traceback");
     lua_rawget (ls, globalsindex);
     lua_insert (ls, ndx);
-    error := error_type'val (lua_pcall (ls, lua_int (num_arguments), lua_int (num_results), ndx));
+
+    error := error_type'val (lua_pcall (ls, lua_int (num_arguments),
+      lua_int (num_results), ndx));
+
     lua_remove (ls, ndx);
     if error /= lua_error_none then
       return ret_error (error, to_string (ls, -1));
@@ -480,24 +488,29 @@ package body lua is
       return no_error;
     end if;
   exception
-    when damned_error: others =>
-      return ret_error (lua_exception, "traced call exception:" & ascii.lf & ascii.cr & ada.exceptions.exception_information (damned_error));
+    when err: others =>
+      return ret_error (lua_exception, "traced call exception:" & ascii.lf
+        & ascii.cr & ada.exceptions.exception_information (err));
   end traced_call;
   pragma inline (traced_call);
 
-  function protected_call (ls: state; num_arguments, num_results, error_func: integer := 0) return error_message is
+  function protected_call (ls: state; num_arguments, num_results,
+    error_func: integer := 0) return error_message is
     error: error_type;
     ndx: constant lua_int := lua_gettop (ls) - lua_int (num_arguments);
   begin
-    error := error_type'val (lua_pcall (ls, lua_int (num_arguments), lua_int (num_results), lua_int (error_func)));
+    error := error_type'val (lua_pcall (ls, lua_int (num_arguments),
+      lua_int (num_results), lua_int (error_func)));
+
     if error /= lua_error_none then
       return ret_error (error, to_string (ls, -1));
     else
       return no_error;
     end if;
   exception
-    when damned_error: others =>
-      return ret_error (lua_exception, "protected call exception:" & ascii.lf & ascii.cr & ada.exceptions.exception_information (damned_error));
+    when err: others =>
+      return ret_error (lua_exception, "protected call exception:" & ascii.lf
+        & ascii.cr & ada.exceptions.exception_information (err));
   end protected_call;
   pragma inline (protected_call);
 
@@ -505,8 +518,9 @@ package body lua is
   begin
     lua_call (ls, lua_int (num_arguments), lua_int (num_results));
   exception
-    when damned_error: others =>
-      put_line ("call exception:" & ascii.lf & ascii.cr & ada.exceptions.exception_information (damned_error));
+    when err: others =>
+      put_line ("call exception:" & ascii.lf & ascii.cr
+        & ada.exceptions.exception_information (err));
   end call;
   pragma inline (call);
 
@@ -531,7 +545,8 @@ package body lua is
     raw_get_int (ls, registry_index, integer (ref));
   end dereference;
 
-  function string_reader (ls: state; data: ics.chars_ptr; size: access ic.size_t) return ics.chars_ptr is
+  function string_reader (ls: state; data: ics.chars_ptr;
+    size: access ic.size_t) return ics.chars_ptr is
     temp: constant ics.chars_ptr := ics.new_string (ics.value (data));
     use ic;
   begin
@@ -540,7 +555,8 @@ package body lua is
     return temp;
   end string_reader;
 
-  function execute_string (ls: state; code: string; chunk_name: string := "[luada]") return error_message is
+  function execute_string (ls: state; code: string; chunk_name:
+    string := "[luada]") return error_message is
     buf: ics.chars_ptr := ics.new_string (code);
     chunk: ics.chars_ptr := ics.new_string ("=" & chunk_name);
     error: error_type;
@@ -557,7 +573,7 @@ package body lua is
 
   function execute_file (ls: state; file_name: string) return error_message is
     f: ada.text_io.file_type;
-    s: string (1..4096);
+    s: string (1 .. 4096);
     n: natural;
     z: unbounded_string;
   begin

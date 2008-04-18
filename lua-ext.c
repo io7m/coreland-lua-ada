@@ -1,4 +1,5 @@
 #include <lua.h>
+#include <lauxlib.h>
 
 const char *
 luext_version (void)

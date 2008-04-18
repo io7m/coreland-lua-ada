@@ -33,7 +33,7 @@ package body lua.lib is
 
   procedure open_library (ls: lua.state; name: string; funcs: reg_array; num_up: integer) is
   begin
-    if name/="" then
+    if name /= "" then
       lua.push_string (ls, name);
       lua.get_table (ls, lua.globals_index);
       if lua.is_nil (ls, -1) then
@@ -45,6 +45,7 @@ package body lua.lib is
       end if;
       lua.insert(ls, - (num_up + 1));
     end if;
+
     for i in funcs'first .. funcs'last loop
       lua.push_string (ls, funcs (i).name);
       for j in 1 .. num_up loop
@@ -53,6 +54,7 @@ package body lua.lib is
       lua.push_user_closure (ls, funcs (i).func, num_up);
       lua.set_table (ls, - (num_up + 3));
     end loop;
+
     lua.pop (ls, num_up);
   end open_library;
 
@@ -103,5 +105,13 @@ package body lua.lib is
   begin
     lua_opendebug(ls);
   end open_debug;
+
+  procedure lual_openlibs (ls: lua.state);
+  pragma import (c, lual_openlibs, "luaL_openlibs", "luaL_openlibs");
+
+  procedure open_libs (ls: lua.state) is
+  begin
+    lual_openlibs (ls);
+  end open_libs;
 
 end lua.lib;
