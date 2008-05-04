@@ -1,16 +1,10 @@
 #!/bin/sh
-# $Id: ada-link 2909 2007-12-12 21:21:47Z m0 $
 
 if [ $# -lt 2 ]
 then
   echo "usage: basename objects ..." 1>&2
   exit 1
 fi
-
-#
-# Assume source is being cross linked if there is a cross-linker
-# defined.
-#
 
 ADALINK=`head -n 1 conf-adalink`
 if [ $? -ne 0 ]

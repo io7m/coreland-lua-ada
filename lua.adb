@@ -2,9 +2,14 @@
 
 with ada.text_io;
 with ada.exceptions;
-use ada.text_io;
 
 package body lua is
+
+  package io renames ada.text_io;
+
+  --
+  -- C functions.
+  --
 
   function luext_version return ics.chars_ptr;
   pragma import (c, luext_version, "luext_version");
@@ -45,7 +50,10 @@ package body lua is
   procedure lua_replace (ls: state; index: lua_int);
   pragma import (c, lua_replace, "lua_replace");
 
+  --
   -- access functions
+  --
+
   function lua_typename (ls: state; index: lua_int) return ics.chars_ptr;
   pragma import (c, lua_typename, "lua_typename");
 
@@ -54,9 +62,6 @@ package body lua is
 
   function lua_isnumber (ls: state; index: lua_int) return lua_int;
   pragma import (c, lua_isnumber, "lua_isnumber");
-
-  function lua_isnil (ls: state; index: lua_int) return lua_int;
-  pragma import (c, lua_isnil, "lua_isnil");
 
   function lua_isstring (ls: state; index: lua_int) return lua_int;
   pragma import (c, lua_isstring, "lua_isstring");
@@ -85,13 +90,16 @@ package body lua is
   function luext_tostring (ls: state; index: lua_int) return ics.chars_ptr;
   pragma import (c, luext_tostring, "luext_tostring");
 
-  function lua_strlen (ls: state; index: lua_int) return lua_int;
-  pragma import (c, lua_strlen, "lua_strlen");
+  function lua_objlen (ls: state; index: lua_int) return lua_int;
+  pragma import (c, lua_objlen, "lua_objlen");
 
   function lua_tocfunction (ls: state; index: lua_int) return user_function;
   pragma import (c, lua_tocfunction, "lua_tocfunction");
 
+  --
   -- push functions
+  --
+
   procedure lua_pushboolean (ls: state; b: lua_int);
   pragma import (c, lua_pushboolean, "lua_pushboolean");
 
@@ -100,9 +108,6 @@ package body lua is
 
   procedure lua_pushstring (ls: state; s: ics.chars_ptr);
   pragma import (c, lua_pushstring, "lua_pushstring");
-
-  procedure lua_pushstring2 (ls: state; s: system.address);
-  pragma import (c, lua_pushstring2, "lua_pushstring");
 
   procedure lua_pushlstring (ls: state; s: system.address; a: integer);
   pragma import (c, lua_pushlstring, "lua_pushlstring");
@@ -116,21 +121,30 @@ package body lua is
   procedure lua_concat (ls: state; num: lua_natural);
   pragma import (c, lua_concat, "lua_concat");
 
+  --
   -- metatable functions
+  --
+
   function lua_getmetatable (ls: state; index: lua_int) return lua_int;
   pragma import (c, lua_getmetatable, "lua_getmetatable");
 
   function lua_setmetatable (ls: state; index: lua_int) return lua_int;
   pragma import (c, lua_setmetatable, "lua_setmetatable");
 
+  --
   -- environment functions
+  --
+
   procedure lua_getfenv (ls: state; index: lua_int);
   pragma import (c, lua_getfenv, "lua_getfenv");
 
   function lua_setfenv (ls: state; index: lua_int) return lua_int;
   pragma import (c, lua_setfenv, "lua_setfenv");
 
+  --
   -- registered functions
+  --
+
   procedure lua_call (ls: in state; num_args: in lua_int; num_results: in lua_int);
   pragma import (c, lua_call, "lua_call");
 
@@ -138,7 +152,10 @@ package body lua is
     error_f: in lua_int) return lua_int;
   pragma import (c, lua_pcall, "lua_pcall");
 
+  --
   -- table functions
+  --
+
   procedure lua_createtable (ls: state; num_arr: lua_int; num_rec: lua_int);
   pragma import (c, lua_createtable, "lua_createtable");
 
@@ -160,19 +177,133 @@ package body lua is
   procedure lua_rawseti (ls: state; index, element: lua_int);
   pragma import (c, lua_rawseti, "lua_rawseti");
 
+  --
   -- errors
+  --
+
   function lua_atpanic (ls: state; func: user_function) return user_function;
   pragma import (c, lua_atpanic, "lua_atpanic");
 
   procedure lua_error (ls: state);
   pragma import (c, lua_error, "lua_error");
-  pragma no_return(lua_error);
+  pragma no_return (lua_error);
 
   procedure lua_sethook (ls: state; func: hook_procedure; amask, count: lua_int);
   pragma import (c, lua_sethook, "lua_sethook");
 
   function lua_gethookmask (ls: state) return lua_int;
   pragma import (c, lua_gethookmask, "lua_gethookmask");
+
+  --
+  -- set functions
+  --
+
+  procedure lua_setfield (ls: state; index: lua_int; key: ics.chars_ptr);
+  pragma import (c, lua_setfield, "lua_setfield");
+
+  --
+  -- get functions
+  --
+
+  procedure lua_getfield (ls: state; index: lua_int; key: ics.chars_ptr);
+  pragma import (c, lua_getfield, "lua_getfield");
+
+  --
+  -- load functions
+  --
+
+  type buffer_ctx is record
+    buff: ics.chars_ptr;
+    size: ic.size_t;
+  end record;
+  pragma convention (c, buffer_ctx);
+
+  type buffer_func is
+    access function (ls: state; data: access buffer_ctx; size: access ic.size_t)
+      return ics.chars_ptr;
+
+  function lua_load_buffer (ls: state;
+    func: buffer_func;
+    data: access buffer_ctx;
+    name: ics.chars_ptr)
+    return lua_int;
+  pragma import (c, lua_load_buffer, "lua_load");
+
+  -- buffer reader callback
+  -- XXX: should be C calling convention
+
+  function read_buffer (ls: state; data: access buffer_ctx; size: access ic.size_t) return ics.chars_ptr is
+    use type ic.size_t;
+    size_alias: constant access ic.size_t := size;
+  begin
+    if data.size = 0 then return ics.null_ptr; end if;
+    size_alias.all := data.size;
+    data.size := 0;
+    return data.buff;
+  end read_buffer;
+
+  function load_buffer (ls: state; str: ics.chars_ptr; size: ic.size_t; name: string) return error_type is
+    cptr: aliased constant ics.chars_ptr := ics.new_string (name);
+    rctx: aliased buffer_ctx := (str, size);
+  begin
+    return error_type'val (lua_load_buffer (ls, read_buffer'access, rctx'access, cptr));
+  end load_buffer;
+  
+  function load_buffer (ls: state; str: string; size: natural; name: string) return error_type is
+  begin
+    return load_buffer (ls, ics.new_string (str), ic.size_t (size), name);
+  end load_buffer;
+
+  function load_buffer (ls: state; str: su.unbounded_string; name: string) return error_type is
+  begin
+    return load_buffer (ls, su.to_string (str), su.length (str), name);
+  end load_buffer;
+
+  function load_file (ls: state; file: string) return error_type is
+    fd: ada.text_io.file_type;
+    buf: string (1 .. 4096);
+    len: natural;
+    ubs: su.unbounded_string;
+  begin
+    io.open (fd, io.in_file, file);
+    while not io.end_of_file (fd) loop
+      io.get_line (fd, buf, len);
+      su.append (ubs, buf (1 .. len) & ascii.lf);
+    end loop;
+    io.close (fd);
+    return load_buffer (ls, ubs, file);
+  end load_file;
+
+  function load_string (ls: state; str: string) return error_type is
+  begin
+    return load_buffer (ls, str, str'last, "");
+  end load_string;
+
+  --
+  -- execute functions
+  --
+
+  function exec_file (ls: state; file: string) return error_type is
+    ec: error_type;
+  begin
+    ec := load_file (ls, file);
+    if ec /= lua_error_none then return ec; end if;
+    ec := error_type'val (lua_pcall (ls, 0, -1, 0));
+    return ec;
+  end exec_file;
+
+  function exec_string (ls: state; str: string) return error_type is
+    ec: error_type;
+  begin
+    ec := load_string (ls, str);
+    if ec /= lua_error_none then return ec; end if;
+    ec := error_type'val (lua_pcall (ls, 0, -1, 0));
+    return ec;
+  end exec_string;
+
+  --
+  -- Main API
+  --
 
   procedure set_hook (ls: state; func: hook_procedure; amask: mask; count: integer) is
   begin
@@ -189,7 +320,10 @@ package body lua is
     lua_error (ls);
   end error;
 
+  --
   -- state manipulation
+  --
+
   function open return state is
   begin
     return luaL_newstate;
@@ -210,7 +344,10 @@ package body lua is
     return lua_atpanic (ls, panic_function);
   end at_panic;
 
+  --
   -- stack manipulation
+  --
+
   function get_top (ls: state) return integer is
   begin
     return integer (lua_gettop (ls));
@@ -246,7 +383,10 @@ package body lua is
     return integer (lua_checkstack (ls, lua_int (size)));
   end check_stack;
 
+  --
   -- access functions (stack -> ada)
+  --
+
   function is_number (ls: state; index: integer) return boolean is
   begin
     return lua_isnumber (ls, lua_int (index)) /= 0;
@@ -269,14 +409,14 @@ package body lua is
 
   function is_nil (ls: state; index: integer) return boolean is
   begin
-    return lua_type (ls, lua_int (index))=0;
+    return lua_type (ls, lua_int (index)) = 0;
   end is_nil;
 
   function type_of (ls: state; index: integer) return lua_ttype is
     x: lua_int;
   begin
     x := lua_type (ls, lua_int (index));
-    return lua_ttype'val (x+1);
+    return lua_ttype'val (x + 1);
   end type_of;
 
   function type_name (ls: state; index: integer) return string is
@@ -299,8 +439,13 @@ package body lua is
 
   function to_boolean (ls: state; index: integer) return boolean is
   begin
-    return lua_toboolean (ls, lua_int (index))/=0;
+    return lua_toboolean (ls, lua_int (index)) /= 0;
   end to_boolean;
+
+  function to_cfunction (ls: state; index: integer) return user_function is
+  begin
+    return lua_tocfunction (ls, lua_int (index));
+  end to_cfunction;
 
   function is_equal (ls: state; index1, index2: integer) return boolean is
   begin
@@ -317,7 +462,20 @@ package body lua is
     return lua_lessthan (ls, lua_int (index1), lua_int (index2)) /= 0;
   end is_less_than;
 
+  function objlen (ls: state; index: integer) return lua_int is
+  begin
+    return lua_objlen (ls, lua_int (index));
+  end objlen;
+
+  function strlen (ls: state; index: integer) return lua_int is
+  begin
+    return lua_objlen (ls, lua_int (index));
+  end strlen;
+
+  --
   -- push functions (ada -> stack)
+  --
+
   procedure push_nil (ls: state) is
   begin
     lua_pushnil (ls);
@@ -337,9 +495,9 @@ package body lua is
     end if;
   end push_boolean;
 
-  procedure push_string (ls: state; pchar: ics.chars_ptr) is
+  procedure push_string (ls: state; str: ics.chars_ptr) is
   begin
-    lua_pushstring (ls, pchar);
+    lua_pushstring (ls, str);
   end push_string;
 
   procedure push_string (ls: state; str: string) is
@@ -351,8 +509,8 @@ package body lua is
     end if;
   end push_string;
 
-  procedure push_string (ls: state; str: unbounded_string) is
-    x: ics.chars_ptr := ics.new_string (to_string (str));
+  procedure push_string (ls: state; str: su.unbounded_string) is
+    x: ics.chars_ptr := ics.new_string (su.to_string (str));
   begin
     lua_pushstring (ls, x);
     ics.free (x);
@@ -378,7 +536,10 @@ package body lua is
     lua_concat (ls, lua_int (n));
   end concat;
 
+  --
   -- get functions (lua -> stack)
+  --
+
   procedure get_table (ls: state; index: integer) is
   begin
     lua_gettable (ls, lua_int (index));
@@ -399,8 +560,46 @@ package body lua is
     lua_rawgeti (ls, lua_int (index), lua_int (element));
   end raw_get_int;
 
+  procedure get_field (ls: state; index: integer; str: ics.chars_ptr) is
+  begin
+    lua_getfield (ls, lua_int (index), str);
+  end get_field;
+
+  procedure get_field (ls: state; index: integer; str: string) is
+  begin
+    lua_getfield (ls, lua_int (index), ics.new_string (str));
+  end get_field;
+
+  procedure get_field (ls: state; index: integer; str: su.unbounded_string) is
+  begin
+    lua_getfield (ls, lua_int (index), ics.new_string (su.to_string (str)));
+  end get_field;
+ 
+  procedure get_global (ls: state; str: ics.chars_ptr) is
+  begin
+    lua_getfield (ls, globalsindex, str);
+  end get_global;
+
+  procedure get_global (ls: state; str: string) is
+  begin
+    lua_getfield (ls, globalsindex, ics.new_string (str));
+  end get_global;
+
+  procedure get_global (ls: state; str: su.unbounded_string) is
+  begin
+    lua_getfield (ls, globalsindex, ics.new_string (su.to_string (str)));
+  end get_global;
+
+  procedure get_fenv (ls: state; index: integer) is
+  begin
+    lua_getfenv (ls, lua_int (index));
+  end get_fenv;
+
+  --
   -- set functions (stack -> lua)
-  procedure set_table     (ls: state; index: integer) is
+  --
+
+  procedure set_table (ls: state; index: integer) is
   begin
     lua_settable (ls, lua_int (index));
   end set_table;
@@ -417,15 +616,53 @@ package body lua is
 
   procedure new_table (ls: state) is
   begin
-     lua_createtable (ls, 0, 0);
+    lua_createtable (ls, 0, 0);
   end new_table;
 
   procedure raw_set_int (ls: state; index: integer; element: integer) is
   begin
-     lua_rawseti (ls, lua_int (index), lua_int (element));
+    lua_rawseti (ls, lua_int (index), lua_int (element));
   end raw_set_int;
 
+  procedure set_field (ls: state; index: integer; str: ics.chars_ptr) is
+  begin
+    lua_setfield (ls, lua_int (index), str);
+  end set_field;
+
+  procedure set_field (ls: state; index: integer; str: string) is
+  begin
+    lua_setfield (ls, lua_int (index), ics.new_string (str));
+  end set_field;
+
+  procedure set_field (ls: state; index: integer; str: su.unbounded_string) is
+  begin
+    lua_setfield (ls, lua_int (index), ics.new_string (su.to_string (str)));
+  end set_field;
+
+  procedure set_global (ls: state; str: ics.chars_ptr) is
+  begin
+    lua_setfield (ls, globalsindex, str);
+  end set_global;
+
+  procedure set_global (ls: state; str: string) is
+  begin
+    lua_setfield (ls, globalsindex, ics.new_string (str));
+  end set_global;
+
+  procedure set_global (ls: state; str: su.unbounded_string) is
+  begin
+    lua_setfield (ls, globalsindex, ics.new_string (su.to_string (str)));
+  end set_global;
+
+  function set_fenv (ls: state; index: integer) return error_type is
+  begin
+    return error_type'val (lua_setfenv (ls, lua_int (index)));
+  end set_fenv;
+
+  --
   -- coroutines
+  --
+
   function lua_resume (ls: state; narg: lua_int) return lua_int;
   pragma import (c, lua_resume, "lua_resume");
 
@@ -434,7 +671,6 @@ package body lua is
   begin
     return (z'length, e, z);
   end ret_error;
-  pragma inline (ret_error);
 
   function resume (ls: state; num_args: integer) return error_message is
     error: error_type;
@@ -457,7 +693,10 @@ package body lua is
         & ada.exceptions.exception_information (err));
   end resume;
 
+  --
   -- misc
+  --
+
   procedure register (ls: state; function_name: string; function_access: user_function) is
   begin
     push_string (ls, function_name);
@@ -465,70 +704,22 @@ package body lua is
     lua_settable (ls, globalsindex);
   end;
 
-  function lua_load (ls: state; reader: chunk_reader; data: ics.chars_ptr;
-    chunk_name: ics.chars_ptr) return lua_int;
-  pragma import (c, lua_load, "lua_load");
-
-  function traced_call (ls: state; num_arguments, num_results: integer)
-    return error_message is
-    error: error_type;
-    ndx: constant lua_int := lua_gettop (ls) - lua_int (num_arguments);
-  begin
-    push_string (ls, "_traceback");
-    lua_rawget (ls, globalsindex);
-    lua_insert (ls, ndx);
-
-    error := error_type'val (lua_pcall (ls, lua_int (num_arguments),
-      lua_int (num_results), ndx));
-
-    lua_remove (ls, ndx);
-    if error /= lua_error_none then
-      return ret_error (error, to_string (ls, -1));
-    else
-      return no_error;
-    end if;
-  exception
-    when err: others =>
-      return ret_error (lua_exception, "traced call exception:" & ascii.lf
-        & ascii.cr & ada.exceptions.exception_information (err));
-  end traced_call;
-  pragma inline (traced_call);
-
-  function protected_call (ls: state; num_arguments, num_results,
-    error_func: integer := 0) return error_message is
-    error: error_type;
-    ndx: constant lua_int := lua_gettop (ls) - lua_int (num_arguments);
-  begin
-    error := error_type'val (lua_pcall (ls, lua_int (num_arguments),
-      lua_int (num_results), lua_int (error_func)));
-
-    if error /= lua_error_none then
-      return ret_error (error, to_string (ls, -1));
-    else
-      return no_error;
-    end if;
-  exception
-    when err: others =>
-      return ret_error (lua_exception, "protected call exception:" & ascii.lf
-        & ascii.cr & ada.exceptions.exception_information (err));
-  end protected_call;
-  pragma inline (protected_call);
-
   procedure call (ls: state; num_arguments, num_results: integer) is
   begin
     lua_call (ls, lua_int (num_arguments), lua_int (num_results));
-  exception
-    when err: others =>
-      put_line ("call exception:" & ascii.lf & ascii.cr
-        & ada.exceptions.exception_information (err));
   end call;
-  pragma inline (call);
+
+  function pcall (ls: state; num_arguments, num_results, error_func: integer)
+    return error_type is
+  begin
+    return error_type'val (lua_pcall (ls, lua.lua_int (num_arguments),
+      lua.lua_int (num_results), lua.lua_int (error_func)));
+  end pcall;
 
   procedure pop (ls: state; count: integer) is
   begin
-    set_top (ls, -(count)-1);
+    set_top (ls, -(count) - 1);
   end pop;
-  pragma inline (pop);
 
   function reference (ls : state) return object_reference is
   begin
@@ -544,47 +735,6 @@ package body lua is
   begin
     raw_get_int (ls, registry_index, integer (ref));
   end dereference;
-
-  function string_reader (ls: state; data: ics.chars_ptr;
-    size: access ic.size_t) return ics.chars_ptr is
-    temp: constant ics.chars_ptr := ics.new_string (ics.value (data));
-    use ic;
-  begin
-    size.all := ics.strlen (data);
-    ics.update (data, 0, ic.to_c (""), false);
-    return temp;
-  end string_reader;
-
-  function execute_string (ls: state; code: string; chunk_name:
-    string := "[luada]") return error_message is
-    buf: ics.chars_ptr := ics.new_string (code);
-    chunk: ics.chars_ptr := ics.new_string ("=" & chunk_name);
-    error: error_type;
-  begin
-    error := error_type'val (lua_load (ls, string_reader'access, buf, chunk));
-    ics.free (buf);
-    ics.free (chunk);
-    if error = lua_error_none then
-      return traced_call (ls, 0, 0);
-    else
-      return ret_error (lua_error_syntax, ics.value (luext_tostring (ls, -1)));
-    end if;
-  end execute_string;
-
-  function execute_file (ls: state; file_name: string) return error_message is
-    f: ada.text_io.file_type;
-    s: string (1 .. 4096);
-    n: natural;
-    z: unbounded_string;
-  begin
-    open (f, in_file, file_name);
-    while not end_of_file (f) loop
-      get_line (f, s, n);
-      append (z, s (1 .. n) & ascii.lf);
-    end loop;
-    close (f);
-    return execute_string (ls, to_string (z), file_name);
-  end execute_file;
 
   function version return string is
   begin

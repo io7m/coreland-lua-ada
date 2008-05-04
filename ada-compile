@@ -1,5 +1,4 @@
 #!/bin/sh
-# $Id: ada-compile 2909 2007-12-12 21:21:47Z m0 $
 
 if [ $# -lt 1 ]
 then

@@ -1,1 +1,1 @@
--g -gnatwa -gnatVa -fstack-check
+-O3 -g -gnatwa -gnatVa -fstack-check

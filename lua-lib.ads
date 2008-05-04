@@ -5,7 +5,7 @@ with lua;
 package lua.lib is
 
   type reg is record
-    name: unbounded_string;
+    name: su.unbounded_string;
     func: lua.user_function;
   end record;
 

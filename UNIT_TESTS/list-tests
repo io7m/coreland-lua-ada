@@ -1,0 +1,6 @@
+#!/bin/sh
+
+( for f in *.ald
+  do
+    echo $f | awk -F. '{print $1}' 
+  done )

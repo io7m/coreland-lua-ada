@@ -1,5 +1,4 @@
 #!/bin/sh
-# $Id$
 
 if [ -f conf-x-cctype ]
 then
