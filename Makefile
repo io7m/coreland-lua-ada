@@ -3,19 +3,19 @@
 default: all
 
 all:\
-UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o\
-UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o\
-UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o\
-UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali UNIT_TESTS/loadfile1.o\
-UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o\
-UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o\
-UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o\
-UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali\
-UNIT_TESTS/utest.o ada-lua-conf ada-lua-conf.o ada-lua.a ctxt/bindir.o\
-ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o\
-ctxt/version.o deinstaller deinstaller.o inst-check inst-check.o inst-copy\
-inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o\
-install_error.o installer installer.o instchk instchk.o insthier.o libada-lua.a\
+UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
+UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o \
+UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o \
+UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali UNIT_TESTS/loadfile1.o \
+UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o \
+UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
+UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
+UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali \
+UNIT_TESTS/utest.o ada-lua-conf ada-lua-conf.o ada-lua.a ctxt/bindir.o \
+ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o \
+ctxt/version.o deinstaller deinstaller.o inst-check inst-check.o inst-copy \
+inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o \
+install_error.o installer installer.o instchk instchk.o insthier.o libada-lua.a \
 lua-ext.o lua-lib.ali lua-lib.o lua-udata.ali lua-udata.o lua.ali lua.o
 
 # Mkf-deinstall
@@ -43,7 +43,7 @@ tests_clean:
 	(cd UNIT_TESTS && make clean)
 
 UNIT_TESTS/execfile:\
-ada-bind ada-link UNIT_TESTS/execfile.ald UNIT_TESTS/execfile.ali\
+ada-bind ada-link UNIT_TESTS/execfile.ald UNIT_TESTS/execfile.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/execfile.ali
 	./ada-link UNIT_TESTS/execfile UNIT_TESTS/execfile.ali lua-ext.o
@@ -56,7 +56,7 @@ UNIT_TESTS/execfile.o:\
 UNIT_TESTS/execfile.ali
 
 UNIT_TESTS/execstring:\
-ada-bind ada-link UNIT_TESTS/execstring.ald UNIT_TESTS/execstring.ali\
+ada-bind ada-link UNIT_TESTS/execstring.ald UNIT_TESTS/execstring.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/execstring.ali
 	./ada-link UNIT_TESTS/execstring UNIT_TESTS/execstring.ali lua-ext.o
@@ -69,7 +69,7 @@ UNIT_TESTS/execstring.o:\
 UNIT_TESTS/execstring.ali
 
 UNIT_TESTS/loadbase:\
-ada-bind ada-link UNIT_TESTS/loadbase.ald UNIT_TESTS/loadbase.ali\
+ada-bind ada-link UNIT_TESTS/loadbase.ald UNIT_TESTS/loadbase.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadbase.ali
 	./ada-link UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali lua-ext.o
@@ -82,7 +82,7 @@ UNIT_TESTS/loadbase.o:\
 UNIT_TESTS/loadbase.ali
 
 UNIT_TESTS/loadfile1:\
-ada-bind ada-link UNIT_TESTS/loadfile1.ald UNIT_TESTS/loadfile1.ali\
+ada-bind ada-link UNIT_TESTS/loadfile1.ald UNIT_TESTS/loadfile1.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadfile1.ali
 	./ada-link UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali lua-ext.o
@@ -95,7 +95,7 @@ UNIT_TESTS/loadfile1.o:\
 UNIT_TESTS/loadfile1.ali
 
 UNIT_TESTS/loadfile2:\
-ada-bind ada-link UNIT_TESTS/loadfile2.ald UNIT_TESTS/loadfile2.ali\
+ada-bind ada-link UNIT_TESTS/loadfile2.ald UNIT_TESTS/loadfile2.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadfile2.ali
 	./ada-link UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali lua-ext.o
@@ -108,7 +108,7 @@ UNIT_TESTS/loadfile2.o:\
 UNIT_TESTS/loadfile2.ali
 
 UNIT_TESTS/loadstring1:\
-ada-bind ada-link UNIT_TESTS/loadstring1.ald UNIT_TESTS/loadstring1.ali\
+ada-bind ada-link UNIT_TESTS/loadstring1.ald UNIT_TESTS/loadstring1.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadstring1.ali
 	./ada-link UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali lua-ext.o
@@ -121,7 +121,7 @@ UNIT_TESTS/loadstring1.o:\
 UNIT_TESTS/loadstring1.ali
 
 UNIT_TESTS/loadstring2:\
-ada-bind ada-link UNIT_TESTS/loadstring2.ald UNIT_TESTS/loadstring2.ali\
+ada-bind ada-link UNIT_TESTS/loadstring2.ald UNIT_TESTS/loadstring2.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadstring2.ali
 	./ada-link UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali lua-ext.o
@@ -134,7 +134,7 @@ UNIT_TESTS/loadstring2.o:\
 UNIT_TESTS/loadstring2.ali
 
 UNIT_TESTS/open:\
-ada-bind ada-link UNIT_TESTS/open.ald UNIT_TESTS/open.ali UNIT_TESTS/utest.ali\
+ada-bind ada-link UNIT_TESTS/open.ald UNIT_TESTS/open.ali UNIT_TESTS/utest.ali \
 lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/open.ali
 	./ada-link UNIT_TESTS/open UNIT_TESTS/open.ali lua-ext.o
@@ -160,7 +160,7 @@ ada-compile:\
 conf-adacomp conf-adatype conf-systype conf-adacflags conf-adafflist flags-cwd
 
 ada-link:\
-conf-adalink conf-adatype conf-systype conf-aldfflist libs-lua libs-math\
+conf-adalink conf-adatype conf-systype conf-aldfflist libs-lua libs-math \
 	libs-cwd
 
 ada-lua-conf:\
@@ -195,11 +195,11 @@ mk-adatype
 	./mk-adatype > conf-adatype.tmp && mv conf-adatype.tmp conf-adatype
 
 conf-cctype:\
-conf-cc conf-cc mk-cctype
+conf-cc mk-cctype
 	./mk-cctype > conf-cctype.tmp && mv conf-cctype.tmp conf-cctype
 
 conf-ldtype:\
-conf-ld conf-ld mk-ldtype
+conf-ld mk-ldtype
 	./mk-ldtype > conf-ldtype.tmp && mv conf-ldtype.tmp conf-ldtype
 
 conf-sosuffix:\
@@ -220,9 +220,9 @@ cc-compile ctxt/bindir.c
 	./cc-compile ctxt/bindir.c
 
 ctxt/ctxt.a:\
-cc-slib ctxt/ctxt.sld ctxt/bindir.o ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o\
+cc-slib ctxt/ctxt.sld ctxt/bindir.o ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o \
 ctxt/slibdir.o ctxt/version.o
-	./cc-slib ctxt/ctxt ctxt/bindir.o ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o\
+	./cc-slib ctxt/ctxt ctxt/bindir.o ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o \
 	ctxt/slibdir.o ctxt/version.o
 
 # ctxt/dlibdir.c.mff
@@ -271,9 +271,9 @@ cc-compile ctxt/version.c
 	./cc-compile ctxt/version.c
 
 deinstaller:\
-cc-link deinstaller.ld deinstaller.o insthier.o install_core.o install_error.o\
+cc-link deinstaller.ld deinstaller.o insthier.o install_core.o install_error.o \
 ctxt/ctxt.a
-	./cc-link deinstaller deinstaller.o insthier.o install_core.o install_error.o\
+	./cc-link deinstaller deinstaller.o insthier.o install_core.o install_error.o \
 	ctxt/ctxt.a
 
 deinstaller.o:\
@@ -321,9 +321,9 @@ cc-compile install_error.c install.h
 	./cc-compile install_error.c
 
 installer:\
-cc-link installer.ld installer.o insthier.o install_core.o install_error.o\
+cc-link installer.ld installer.o insthier.o install_core.o install_error.o \
 ctxt/ctxt.a
-	./cc-link installer installer.o insthier.o install_core.o install_error.o\
+	./cc-link installer installer.o insthier.o install_core.o install_error.o \
 	ctxt/ctxt.a
 
 installer.o:\
@@ -331,9 +331,9 @@ cc-compile installer.c install.h
 	./cc-compile installer.c
 
 instchk:\
-cc-link instchk.ld instchk.o insthier.o install_core.o install_error.o\
+cc-link instchk.ld instchk.o insthier.o install_core.o install_error.o \
 ctxt/ctxt.a
-	./cc-link instchk instchk.o insthier.o install_core.o install_error.o\
+	./cc-link instchk instchk.o insthier.o install_core.o install_error.o \
 	ctxt/ctxt.a
 
 instchk.o:\
@@ -404,24 +404,25 @@ conf-cc
 clean-all: tests_clean obj_clean ext_clean
 clean: obj_clean
 obj_clean:
-	rm -f UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o\
-	UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o\
-	UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o\
-	UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali UNIT_TESTS/loadfile1.o\
-	UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o\
-	UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o\
-	UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o\
-	UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali\
-	UNIT_TESTS/utest.o ada-lua-conf ada-lua-conf.o ada-lua.a ctxt/bindir.c\
-	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/incdir.c\
-	ctxt/incdir.o ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o\
-	ctxt/version.c ctxt/version.o deinstaller deinstaller.o inst-check inst-check.o\
-	inst-copy inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o\
-	install_error.o installer installer.o instchk instchk.o insthier.o libada-lua.a\
+	rm -f UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
+	UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o \
+	UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o \
+	UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali UNIT_TESTS/loadfile1.o \
+	UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o \
+	UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
+	UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
+	UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali \
+	UNIT_TESTS/utest.o ada-lua-conf ada-lua-conf.o ada-lua.a ctxt/bindir.c \
+	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/incdir.c \
+	ctxt/incdir.o ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o \
+	ctxt/version.c ctxt/version.o deinstaller deinstaller.o inst-check inst-check.o \
+	inst-copy inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o \
+	install_error.o installer installer.o instchk instchk.o insthier.o libada-lua.a \
 	lua-ext.o lua-lib.ali lua-lib.o lua-udata.ali lua-udata.o lua.ali lua.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 
-regen:
+regen:\
+ada-srcmap ada-srcmap-all
 	./ada-srcmap-all
 	cpj-genmk > Makefile.tmp && mv Makefile.tmp Makefile

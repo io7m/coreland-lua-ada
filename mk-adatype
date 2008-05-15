@@ -2,7 +2,7 @@
 
 cleanup()
 {
-
+  rm -f
 }
 
 try_v()
