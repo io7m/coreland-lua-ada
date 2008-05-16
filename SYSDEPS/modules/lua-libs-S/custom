@@ -1,0 +1,39 @@
+#!/bin/sh
+
+exec 1> "$1"
+
+args=""
+path="${SYSDEP_STDLIB}"
+file="liblua.a"
+
+FLAGS=`${SYSDEP_TRY_MANUAL} "${file}" "${path}" "-L" 2>&-`
+if [ "x${FLAGS}" != "x" ]
+then
+  echo ${args}
+  exit 0
+fi
+
+#
+# Lua uses versioned directories.
+#
+
+for dir in ${path}
+do
+  maybe_dirs=`ls ${dir} | grep lua`
+  for dir_ext in ${maybe_dirs}
+  do
+    maybe_libs=`ls "${dir}/${dir_ext}" | grep liblua`
+    for lib_ext in ${maybe_libs}
+    do
+      if [ -f "${dir}/${dir_ext}/${lib_ext}" ]
+      then
+        ${SYSDEP_INFO} "using ${dir}/${dir_ext}/${lib_ext}"
+        echo "${dir}/${dir_ext}/${lib_ext}"
+        exit 0
+      fi
+    done
+  done
+done
+
+${SYSDEP_ERROR} "manual/custom search failed"
+exit 0 

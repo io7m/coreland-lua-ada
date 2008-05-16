@@ -1,0 +1,35 @@
+#!/bin/sh
+
+exec 1> "$1"
+
+args=""
+path="${SYSDEP_STDINC}"
+file="lua.h"
+
+FLAGS=`${SYSDEP_TRY_MANUAL} "${file}" "${path}" "-I" 2>&-`
+if [ "x${FLAGS}" != "x" ]
+then
+  echo ${args} -DHAVE_LUA
+  exit 0
+fi
+
+#
+# Lua uses versioned directories.
+#
+
+for dir in ${path}
+do
+  maybe_dirs=`ls ${dir} | grep lua`
+  for dir_ext in ${maybe_dirs}
+  do
+    if [ -f "${dir}/${dir_ext}/${file}" ]
+    then
+      ${SYSDEP_INFO} "using ${dir_ext} at ${dir}/${dir_ext}"
+      echo "-I${dir}/${dir_ext} -DHAVE_LUA "
+      exit 0
+    fi
+  done
+done
+
+${SYSDEP_ERROR} "manual/custom search failed"
+exit 0 

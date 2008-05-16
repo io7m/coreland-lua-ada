@@ -42,6 +42,31 @@ tests:
 tests_clean:
 	(cd UNIT_TESTS && make clean)
 
+# -- SYSDEPS start
+flags-lua:
+	@echo SYSDEPS lua-flags run create flags-lua 
+	@(cd SYSDEPS/modules/lua-flags && ./run)
+libs-lua-S:
+	@echo SYSDEPS lua-libs-S run create libs-lua-S 
+	@(cd SYSDEPS/modules/lua-libs-S && ./run)
+
+
+lua-flags_clean:
+	@echo SYSDEPS lua-flags clean flags-lua 
+	@(cd SYSDEPS/modules/lua-flags && ./clean)
+lua-libs-S_clean:
+	@echo SYSDEPS lua-libs-S clean libs-lua-S 
+	@(cd SYSDEPS/modules/lua-libs-S && ./clean)
+
+
+sysdeps_clean:\
+lua-flags_clean \
+lua-libs-S_clean \
+
+
+# -- SYSDEPS end
+
+
 UNIT_TESTS/execfile:\
 ada-bind ada-link UNIT_TESTS/execfile.ald UNIT_TESTS/execfile.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
@@ -160,7 +185,7 @@ ada-compile:\
 conf-adacomp conf-adatype conf-systype conf-adacflags conf-adafflist flags-cwd
 
 ada-link:\
-conf-adalink conf-adatype conf-systype conf-aldfflist libs-lua libs-math \
+conf-adalink conf-adatype conf-systype conf-aldfflist libs-lua-S libs-math \
 	libs-cwd
 
 ada-lua-conf:\
@@ -185,7 +210,7 @@ cc-compile:\
 conf-cc conf-cctype conf-systype conf-cflags conf-ccfflist flags-lua
 
 cc-link:\
-conf-ld conf-ldtype conf-systype conf-ldfflist libs-lua
+conf-ld conf-ldtype conf-systype conf-ldfflist libs-lua-S
 
 cc-slib:\
 conf-systype
@@ -401,7 +426,7 @@ conf-systype
 mk-systype:\
 conf-cc
 
-clean-all: tests_clean obj_clean ext_clean
+clean-all: sysdeps_clean tests_clean obj_clean ext_clean
 clean: obj_clean
 obj_clean:
 	rm -f UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
