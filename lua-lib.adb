@@ -59,7 +59,7 @@ package body lua.lib is
   end open_library;
 
   procedure lua_openbase (ls: lua.state);
-  pragma import (c, lua_openbase, "luaopen_base", "luaopen_base");
+  pragma import (c, lua_openbase, "luaopen_base");
 
   procedure open_base (ls: lua.state) is
   begin
@@ -67,7 +67,7 @@ package body lua.lib is
   end open_base;
 
   procedure lua_opentable (ls: lua.state);
-  pragma import (c, lua_opentable, "luaopen_table", "luaopen_table");
+  pragma import (c, lua_opentable, "luaopen_table");
 
   procedure open_table (ls: lua.state) is
   begin
@@ -75,7 +75,7 @@ package body lua.lib is
   end open_table;
 
   procedure lua_openstring (ls: lua.state);
-  pragma import (c, lua_openstring, "luaopen_string", "luaopen_string");
+  pragma import (c, lua_openstring, "luaopen_string");
 
   procedure open_string (ls: lua.state) is
   begin
@@ -83,7 +83,7 @@ package body lua.lib is
   end open_string;
 
   procedure lua_openio (ls: lua.state);
-  pragma import (c, lua_openio, "luaopen_io", "luaopen_io");
+  pragma import (c, lua_openio, "luaopen_io");
 
   procedure open_io (ls: lua.state) is
   begin
@@ -91,7 +91,7 @@ package body lua.lib is
   end open_io;
 
   procedure lua_openmath (ls: lua.state);
-  pragma import (c, lua_openmath, "luaopen_math", "luaopen_math");
+  pragma import (c, lua_openmath, "luaopen_math");
 
   procedure open_math (ls: lua.state) is
   begin
@@ -99,7 +99,7 @@ package body lua.lib is
   end open_math;
 
   procedure lua_opendebug (ls: lua.state);
-  pragma import (c, lua_opendebug, "luaopen_debug", "luaopen_debug");
+  pragma import (c, lua_opendebug, "luaopen_debug");
 
   procedure open_debug (ls: lua.state) is
   begin
@@ -107,7 +107,7 @@ package body lua.lib is
   end open_debug;
 
   procedure lual_openlibs (ls: lua.state);
-  pragma import (c, lual_openlibs, "luaL_openlibs", "luaL_openlibs");
+  pragma import (c, lual_openlibs, "luaL_openlibs");
 
   procedure open_libs (ls: lua.state) is
   begin
