@@ -13,6 +13,7 @@ package body lua.udata is
   begin
     lua.lib.open_library (ls, class_name, method_table, 0);
     dummy := lua.lib.new_metatable (ls, class_name);
+    if not dummy then return; end if;
     lua.lib.open_library (ls, "", meta_table, 0);
     lua.push_string (ls, "__index");
     lua.push_value (ls, -3);
@@ -24,13 +25,15 @@ package body lua.udata is
   end register;
   
   procedure push (ls: lua.state; item: t) is
-    x: p; error: lua.error_type;
+    x: p;
+    error: lua.error_type;
   begin
     x := p (convert.to_pointer (lua_newuserdata (ls, lua.ic.size_t (t'size / 8))));
     x.all := item;
     lua.push_string (ls, class_name);
     lua.raw_get (ls, lua.registry_index);
     error := lua.set_metatable (ls, -2);
+    if error /= lua.lua_error_none then return; end if;
   end push;
 
   function get (ls: lua.state; index: integer := 1) return t is
