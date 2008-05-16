@@ -1,6 +1,7 @@
 #!/bin/sh
 
-exec 1> "$1"
+temp_f="$1"
+temp_sys="$2"
 
 args=""
 path="${SYSDEP_STDINC}"
@@ -9,7 +10,8 @@ file="lua.h"
 FLAGS=`${SYSDEP_TRY_MANUAL} "${file}" "${path}" "-I" 2>&-`
 if [ "x${FLAGS}" != "x" ]
 then
-  echo ${args} -DHAVE_LUA
+  echo "${FLAGS} -DHAVE_LUA " >> "${temp_f}"
+  echo "lua-flags: ${FLAGS} -DHAVE_LUA " >> "${temp_sys}"
   exit 0
 fi
 
@@ -25,7 +27,8 @@ do
     if [ -f "${dir}/${dir_ext}/${file}" ]
     then
       ${SYSDEP_INFO} "using ${dir_ext} at ${dir}/${dir_ext}"
-      echo "-I${dir}/${dir_ext} -DHAVE_LUA "
+      echo "-I${dir}/${dir_ext} -DHAVE_LUA " >> "${temp_f}"
+      echo "lua-flags: -I${dir}/${dir_ext} -DHAVE_LUA " >> "${temp_sys}"
       exit 0
     fi
   done

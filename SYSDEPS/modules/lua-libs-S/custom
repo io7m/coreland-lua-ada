@@ -1,6 +1,7 @@
 #!/bin/sh
 
-exec 1> "$1"
+temp_f="$1"
+temp_sys="$2"
 
 args=""
 path="${SYSDEP_STDLIB}"
@@ -9,7 +10,8 @@ file="liblua.a"
 FLAGS=`${SYSDEP_TRY_MANUAL} "${file}" "${path}" "-L" 2>&-`
 if [ "x${FLAGS}" != "x" ]
 then
-  echo ${args}
+  echo "${FLAGS} -llua " >> "${temp_f}"
+  echo "lua-libs-S: ${FLAGS} -llua " >> "${temp_sys}"
   exit 0
 fi
 
@@ -28,7 +30,8 @@ do
       if [ -f "${dir}/${dir_ext}/${lib_ext}" ]
       then
         ${SYSDEP_INFO} "using ${dir}/${dir_ext}/${lib_ext}"
-        echo "${dir}/${dir_ext}/${lib_ext}"
+        echo "${dir}/${dir_ext}/${lib_ext} " >> "${temp_f}"
+        echo "libs-lua-S: ${dir}/${dir_ext}/${lib_ext} " >> "${temp_sys}"
         exit 0
       fi
     done
