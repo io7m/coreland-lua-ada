@@ -24,7 +24,7 @@ do
   maybe_dirs=`ls ${dir} | grep lua`
   for dir_ext in ${maybe_dirs}
   do
-    maybe_libs=`ls "${dir}/${dir_ext}" | grep liblua`
+    maybe_libs=`ls "${dir}/${dir_ext}" | grep 'liblua[0-9.]*\.a'`
     for lib_ext in ${maybe_libs}
     do
       if [ -f "${dir}/${dir_ext}/${lib_ext}" ]
