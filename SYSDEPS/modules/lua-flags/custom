@@ -26,7 +26,6 @@ do
   do
     if [ -f "${dir}/${dir_ext}/${file}" ]
     then
-      ${SYSDEP_INFO} "using ${dir_ext} at ${dir}/${dir_ext}"
       echo "-I${dir}/${dir_ext} -DHAVE_LUA " >> "${temp_f}"
       echo "lua-flags: -I${dir}/${dir_ext} -DHAVE_LUA " >> "${temp_sys}"
       exit 0

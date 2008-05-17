@@ -16,27 +16,41 @@ then
 fi
 
 #
-# Lua uses versioned directories.
+# Lua distributors are clearly insane.
 #
 
-for dir in ${path}
-do
-  maybe_dirs=`ls ${dir} | grep lua`
-  for dir_ext in ${maybe_dirs}
-  do
-    maybe_libs=`ls "${dir}/${dir_ext}" | grep 'liblua[0-9.]*\.a'`
-    for lib_ext in ${maybe_libs}
+case ${SYSDEP_OS} in
+  SYSDEP_OS_FREEBSD)
+    for basedir in ${path}
     do
-      if [ -f "${dir}/${dir_ext}/${lib_ext}" ]
-      then
-        ${SYSDEP_INFO} "using ${dir}/${dir_ext}/${lib_ext}"
-        echo "${dir}/${dir_ext}/${lib_ext} " >> "${temp_f}"
-        echo "libs-lua-S: ${dir}/${dir_ext}/${lib_ext} " >> "${temp_sys}"
-        exit 0
-      fi
+      lua_dirs=`ls ${basedir} 2>/dev/null | grep 'lua[0-9]*$' 2>/dev/null`
+      for dir in ${lua_dirs}
+      do
+        if [ -f "${basedir}/${dir}/${file}" ]
+        then
+          echo "${basedir}/${dir}/${file} " >> "${temp_f}"
+          echo "lua-libs-S: ${basedir}/${dir}/${file} " >> "${temp_sys}"
+          exit 0
+        fi
+      done
     done
-  done
-done
+    ;;
+  SYSDEP_OS_LINUX)
+    for basedir in ${path}
+    do
+      lua_libs=`ls ${basedir} 2>/dev/null | grep 'liblua[0-9]*\.[0-9]*\.a' 2>/dev/null`
+      for lib in ${lua_libs}
+      do
+        if [ -f "${basedir}/${lib}" ]
+        then
+          echo "${basedir}/${lib} " >> "${temp_f}"
+          echo "lua-libs-S: ${basedir}/${lib} " >> "${temp_sys}"
+          exit 0
+        fi
+      done
+    done
+    ;;
+esac
 
 ${SYSDEP_ERROR} "manual/custom search failed"
 exit 0 
