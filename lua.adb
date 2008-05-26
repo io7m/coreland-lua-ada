@@ -420,8 +420,9 @@ package body lua is
   end type_of;
 
   function type_name (ls: state; index: integer) return string is
+    t: constant lua_int := lua_type (ls, lua_int (index));
   begin
-    return ics.value (lua_typename (ls, lua_int (index)));
+    return ics.value (lua_typename (ls, t));
   end type_name;
 
   function to_number (ls: state; index: integer) return lua_number is
