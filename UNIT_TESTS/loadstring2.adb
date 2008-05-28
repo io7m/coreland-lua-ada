@@ -3,10 +3,10 @@ with lua;
 with lua.lib;
 
 procedure loadstring2 is
-  use type lua.error_type;
+  use type lua.error_t;
 
-  ls: lua.state;
-  ec: lua.error_type;
+  ls: lua.state_ptr_t;
+  ec: lua.error_t;
 begin
   ls := lua.open;
   lua.lib.open_base (ls);

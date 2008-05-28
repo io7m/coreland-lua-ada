@@ -4,7 +4,6 @@
 
 static unsigned int flag;
 static int str_diff(register const char *, register const char *);
-static long str_rchr(register const char *, register int);
 
 #define FLAG_INCDIR  0x0001
 #define FLAG_DLIBDIR 0x0002
@@ -18,15 +17,11 @@ static long str_rchr(register const char *, register int);
 
 /* PROJECT SPECIFIC */
 
-const char progname[] = "ada-lua-conf";
+const char progname[] = "lua-ada-conf";
 
 void flag_incdir(void)
 {
-  unsigned long pos;
   if (flag & FLAG_COMPILE) {
-    pos = str_rchr(ctxt_incdir, '/');
-    if (pos)
-      ctxt_incdir[str_rchr(ctxt_incdir, '/')] = 0;
     printf("-I%s ", ctxt_incdir);
   } else {
     printf("%s ", ctxt_incdir);
@@ -48,7 +43,7 @@ void flag_slibdir(void)
 }
 void flag_ldflags(void)
 {
-  printf("-lada-lua ");
+  printf("-llua-ada ");
 }
 
 /* PROJECT SPECIFIC END */
@@ -143,20 +138,4 @@ static int str_diff(register const char *s, register const char *t)
   }
   return ((int)(unsigned int)(unsigned char) u) - 
          ((int)(unsigned int)(unsigned char) *t);
-}
-static long str_rchr(register const char *s, register int c)
-{
-  register const char *t;
-  register const char *u;
-  register char cc;
-  int f = 0;
-  for (t = s, cc = c, u = 0;;) {
-    if (!*t) break; if (*t == cc) { u = t; f = 1; } ++t;
-    if (!*t) break; if (*t == cc) { u = t; f = 1; } ++t;
-    if (!*t) break; if (*t == cc) { u = t; f = 1; } ++t;
-    if (!*t) break; if (*t == cc) { u = t; f = 1; } ++t;
-  }
-  if (f == 0) return -1;
-  if (!u) u = t;
-  return u - s;
 }

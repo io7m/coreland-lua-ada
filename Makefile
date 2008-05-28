@@ -11,12 +11,12 @@ UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o \
 UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
 UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
 UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali \
-UNIT_TESTS/utest.o ada-lua-conf ada-lua-conf.o ada-lua.a ctxt/bindir.o \
-ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o \
-ctxt/version.o deinstaller deinstaller.o inst-check inst-check.o inst-copy \
-inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o \
-install_error.o installer installer.o instchk instchk.o insthier.o libada-lua.a \
-lua-ext.o lua-lib.ali lua-lib.o lua-udata.ali lua-udata.o lua.ali lua.o
+UNIT_TESTS/utest.o ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o \
+ctxt/repos.o ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o inst-check \
+inst-check.o inst-copy inst-copy.o inst-dir inst-dir.o inst-link inst-link.o \
+install_core.o install_error.o installer installer.o instchk instchk.o \
+insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o lua-lib.ali \
+lua-lib.o lua-udata.ali lua-udata.o lua.ali lua.o
 
 # Mkf-deinstall
 deinstall: deinstaller inst-check inst-copy inst-dir inst-link
@@ -188,18 +188,6 @@ ada-link:\
 conf-adalink conf-adatype conf-systype conf-aldfflist libs-lua-S libs-math \
 	libs-cwd
 
-ada-lua-conf:\
-cc-link ada-lua-conf.ld ada-lua-conf.o ctxt/ctxt.a
-	./cc-link ada-lua-conf ada-lua-conf.o ctxt/ctxt.a
-
-ada-lua-conf.o:\
-cc-compile ada-lua-conf.c ctxt.h
-	./cc-compile ada-lua-conf.c
-
-ada-lua.a:\
-cc-slib ada-lua.sld lua-lib.o lua-udata.o lua.o lua-ext.o
-	./cc-slib ada-lua lua-lib.o lua-udata.o lua.o lua-ext.o
-
 ada-srcmap:\
 conf-adacomp conf-adatype conf-systype
 
@@ -369,9 +357,17 @@ insthier.o:\
 cc-compile insthier.c ctxt.h install.h
 	./cc-compile insthier.c
 
-libada-lua.a:\
-cc-slib libada-lua.sld lua-ext.o lua-lib.o lua-udata.o lua.o
-	./cc-slib libada-lua lua-ext.o lua-lib.o lua-udata.o lua.o
+lua-ada-conf:\
+cc-link lua-ada-conf.ld lua-ada-conf.o ctxt/ctxt.a
+	./cc-link lua-ada-conf lua-ada-conf.o ctxt/ctxt.a
+
+lua-ada-conf.o:\
+cc-compile lua-ada-conf.c ctxt.h
+	./cc-compile lua-ada-conf.c
+
+lua-ada.a:\
+cc-slib lua-ada.sld lua-lib.o lua-udata.o lua.o lua-ext.o
+	./cc-slib lua-ada lua-lib.o lua-udata.o lua.o lua-ext.o
 
 lua-ext.o:\
 cc-compile lua-ext.c
@@ -437,13 +433,13 @@ obj_clean:
 	UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
 	UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
 	UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali \
-	UNIT_TESTS/utest.o ada-lua-conf ada-lua-conf.o ada-lua.a ctxt/bindir.c \
-	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/incdir.c \
-	ctxt/incdir.o ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o \
-	ctxt/version.c ctxt/version.o deinstaller deinstaller.o inst-check inst-check.o \
-	inst-copy inst-copy.o inst-dir inst-dir.o inst-link inst-link.o install_core.o \
-	install_error.o installer installer.o instchk instchk.o insthier.o libada-lua.a \
-	lua-ext.o lua-lib.ali lua-lib.o lua-udata.ali lua-udata.o lua.ali lua.o
+	UNIT_TESTS/utest.o ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c \
+	ctxt/dlibdir.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
+	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o deinstaller \
+	deinstaller.o inst-check inst-check.o inst-copy inst-copy.o inst-dir inst-dir.o \
+	inst-link inst-link.o install_core.o install_error.o installer installer.o \
+	instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o \
+	lua-lib.ali lua-lib.o lua-udata.ali lua-udata.o lua.ali lua.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 

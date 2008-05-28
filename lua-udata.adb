@@ -2,13 +2,15 @@
 
 package body lua.udata is
   
-  function lua_newuserdata (ls: lua.state; size: lua.ic.size_t) return system.address;
+  function lua_newuserdata (ls: lua.state_ptr_t; size: lua.ic.size_t)
+    return system.address;
   pragma import (c, lua_newuserdata, "lua_newuserdata");
 
-  function lua_touserdata  (ls: lua.state; index: lua.lua_int) return system.address;
+  function lua_touserdata  (ls: lua.state_ptr_t; index: lua.int_t)
+    return system.address;
   pragma import (c, lua_touserdata, "lua_touserdata");
 
-  procedure register (ls: lua.state) is
+  procedure register (ls: lua.state_ptr_t) is
     dummy: boolean;
   begin
     lua.lib.open_library (ls, class_name, method_table, 0);
@@ -24,11 +26,13 @@ package body lua.udata is
     lua.pop (ls, 1);
   end register;
   
-  procedure push (ls: lua.state; item: t) is
-    x: p;
-    error: lua.error_type;
+  procedure push (ls: lua.state_ptr_t; item: udata_t) is
+    x: udata_ptr_t;
+    error: lua.error_t;
   begin
-    x := p (convert.to_pointer (lua_newuserdata (ls, lua.ic.size_t (t'size / 8))));
+    x := udata_ptr_t (convert.to_pointer
+      (lua_newuserdata (ls, lua.ic.size_t (udata_t'size / 8))));
+
     x.all := item;
     lua.push_string (ls, class_name);
     lua.raw_get (ls, lua.registry_index);
@@ -36,9 +40,9 @@ package body lua.udata is
     if error /= lua.lua_error_none then return; end if;
   end push;
 
-  function get (ls: lua.state; index: integer := 1) return t is
+  function get (ls: lua.state_ptr_t; index: integer := 1) return udata_t is
     use system;
-    sa: constant system.address := lua_touserdata (ls, lua.lua_int (index));
+    sa: constant system.address := lua_touserdata (ls, lua.int_t (index));
   begin
     return convert.to_pointer (sa).all;
   end get;
