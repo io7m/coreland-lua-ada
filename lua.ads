@@ -120,6 +120,7 @@ package lua is
 
   function type_of (ls: state_ptr_t; index: integer) return type_t;
   function type_name (ls: state_ptr_t; index: integer) return string;
+  function type_name (t: lua.type_t) return string;
 
   function to_number (ls: state_ptr_t; index: integer) return number_t;
   function to_string (ls: state_ptr_t; index: integer) return string;

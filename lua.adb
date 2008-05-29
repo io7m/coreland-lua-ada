@@ -427,6 +427,22 @@ package body lua is
     return ics.value (lua_typename (ls, t));
   end type_name;
 
+  function type_name (t: lua.type_t) return string is
+  begin
+    case t is
+      when t_none => return "none";
+      when t_nil => return "nil";
+      when t_boolean => return "boolean";
+      when t_lightuserdata => return "light_userdata";
+      when t_number => return "number";
+      when t_string => return "string";
+      when t_table => return "table";
+      when t_function => return "function";
+      when t_userdata => return "userdata";
+      when t_thread => return "thread";
+    end case;
+  end type_name;
+
   function to_number (ls: state_ptr_t; index: integer) return number_t is
   begin
     return lua_tonumber (ls, int_t (index));
