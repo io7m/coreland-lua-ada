@@ -67,17 +67,17 @@ package lua is
   globals_index:  constant integer := -10002;
   mult_ret:       constant integer := -1;
 
-  type user_func_t is access function (ls: state_ptr_t) return int_t;
+  type user_func_t is access function (state: state_ptr_t) return int_t;
   pragma convention (c, user_func_t);
 
-  type hook_t is access procedure (ls: state_ptr_t; d: debug_t);
+  type hook_t is access procedure (state: state_ptr_t; d: debug_t);
   pragma convention (c, hook_t);
 
-  type chunk_reader_t is access function (ls: state_ptr_t; data: ics.chars_ptr;
+  type chunk_reader_t is access function (state: state_ptr_t; data: ics.chars_ptr;
     size: access ic.size_t) return ics.chars_ptr;
   pragma convention (c, chunk_reader_t);
 
-  type chunk_writer_t is access function (ls: state_ptr_t; p: ics.chars_ptr;
+  type chunk_writer_t is access function (state: state_ptr_t; p: ics.chars_ptr;
     size: ic.size_t; data: ics.chars_ptr) return int_t;
   pragma convention (c, chunk_writer_t);
 
@@ -96,126 +96,126 @@ package lua is
 
   -- state manipulation
   function open return state_ptr_t;
-  procedure close (ls: state_ptr_t);
-  function at_panic (ls: state_ptr_t; panic_function: user_func_t) return user_func_t;
+  procedure close (state: state_ptr_t);
+  function at_panic (state: state_ptr_t; panic_function: user_func_t) return user_func_t;
 
   -- stack manipulation
-  function get_top (ls: state_ptr_t) return integer;
-  procedure set_top (ls: state_ptr_t; index: integer);
-  procedure push_value (ls: state_ptr_t; index: integer);
-  procedure remove (ls: state_ptr_t; index: integer);
-  procedure insert (ls: state_ptr_t; index: integer);
-  procedure replace (ls: state_ptr_t; index: integer);
-  function check_stack (ls: state_ptr_t; size: integer) return integer;
+  function get_top (state: state_ptr_t) return integer;
+  procedure set_top (state: state_ptr_t; index: integer);
+  procedure push_value (state: state_ptr_t; index: integer);
+  procedure remove (state: state_ptr_t; index: integer);
+  procedure insert (state: state_ptr_t; index: integer);
+  procedure replace (state: state_ptr_t; index: integer);
+  function check_stack (state: state_ptr_t; size: integer) return integer;
 
   -- check functions (stack -> ada)
-  function is_number (ls: state_ptr_t; index: integer) return boolean;
-  function is_string (ls: state_ptr_t; index: integer) return boolean;
-  function is_user_function (ls: state_ptr_t; index: integer) return boolean;
-  function is_user_data (ls: state_ptr_t; index: integer) return boolean;
-  function is_nil (ls: state_ptr_t; index: integer) return boolean;
-  function is_equal (ls: state_ptr_t; index1, index2: integer) return boolean;
-  function is_raw_equal (ls: state_ptr_t; index1, index2: integer) return boolean;
-  function is_less_than (ls: state_ptr_t; index1, index2: integer) return boolean;
+  function is_number (state: state_ptr_t; index: integer) return boolean;
+  function is_string (state: state_ptr_t; index: integer) return boolean;
+  function is_user_function (state: state_ptr_t; index: integer) return boolean;
+  function is_user_data (state: state_ptr_t; index: integer) return boolean;
+  function is_nil (state: state_ptr_t; index: integer) return boolean;
+  function is_equal (state: state_ptr_t; index1, index2: integer) return boolean;
+  function is_raw_equal (state: state_ptr_t; index1, index2: integer) return boolean;
+  function is_less_than (state: state_ptr_t; index1, index2: integer) return boolean;
 
-  function type_of (ls: state_ptr_t; index: integer) return type_t;
-  function type_name (ls: state_ptr_t; index: integer) return string;
+  function type_of (state: state_ptr_t; index: integer) return type_t;
+  function type_name (state: state_ptr_t; index: integer) return string;
   function type_name (t: lua.type_t) return string;
 
-  function to_number (ls: state_ptr_t; index: integer) return number_t;
-  function to_string (ls: state_ptr_t; index: integer) return string;
-  function to_boolean (ls: state_ptr_t; index: integer) return boolean;
-  function to_cfunction (ls: state_ptr_t; index: integer) return user_func_t;
+  function to_number (state: state_ptr_t; index: integer) return number_t;
+  function to_string (state: state_ptr_t; index: integer) return string;
+  function to_boolean (state: state_ptr_t; index: integer) return boolean;
+  function to_cfunction (state: state_ptr_t; index: integer) return user_func_t;
 
-  function objlen (ls: state_ptr_t; index: integer) return int_t;
-  function strlen (ls: state_ptr_t; index: integer) return int_t;
+  function objlen (state: state_ptr_t; index: integer) return int_t;
+  function strlen (state: state_ptr_t; index: integer) return int_t;
 
-  -- function to_user_function (ls: state_ptr_t; index: integer) return user_func_t;
-  -- function to_user_data (ls: state_ptr_t; index: integer) return void;
-  -- function to_thread (ls: state_ptr_t; index: integer) return state_ptr_t;
+  -- function to_user_function (state: state_ptr_t; index: integer) return user_func_t;
+  -- function to_user_data (state: state_ptr_t; index: integer) return void;
+  -- function to_thread (state: state_ptr_t; index: integer) return state_ptr_t;
 
   -- push functions (ada -> stack)
-  procedure push_nil (ls: state_ptr_t);
-  procedure push_number (ls: state_ptr_t; n: number_t);
-  procedure push_boolean (ls: state_ptr_t; b: boolean);
-  procedure push_string (ls: state_ptr_t; str: ics.chars_ptr);
-  procedure push_string (ls: state_ptr_t; str: string);
-  procedure push_string (ls: state_ptr_t; str: su.unbounded_string);
-  procedure push_string (ls: state_ptr_t; address: system.address; amount: positive);
-  procedure push_user_closure (ls: state_ptr_t; func: user_func_t; num_params: integer);
-  procedure push_user_function (ls: state_ptr_t; func: user_func_t);
+  procedure push_nil (state: state_ptr_t);
+  procedure push_number (state: state_ptr_t; n: number_t);
+  procedure push_boolean (state: state_ptr_t; b: boolean);
+  procedure push_string (state: state_ptr_t; str: ics.chars_ptr);
+  procedure push_string (state: state_ptr_t; str: string);
+  procedure push_string (state: state_ptr_t; str: su.unbounded_string);
+  procedure push_string (state: state_ptr_t; address: system.address; amount: positive);
+  procedure push_user_closure (state: state_ptr_t; func: user_func_t; num_params: integer);
+  procedure push_user_function (state: state_ptr_t; func: user_func_t);
 
   -- new functions
-  procedure new_table (ls: state_ptr_t);
-   function new_thread (ls: state_ptr_t) return state_ptr_t;
+  procedure new_table (state: state_ptr_t);
+   function new_thread (state: state_ptr_t) return state_ptr_t;
 
   -- get functions (lua -> stack)
-  procedure get_table (ls: state_ptr_t; index: integer);
-   function get_metatable (ls: state_ptr_t; index: integer) return error_t;
-  procedure raw_get (ls: state_ptr_t; index: integer);
-  procedure raw_get_int (ls: state_ptr_t; index: integer; element: integer);
-  procedure get_field (ls: state_ptr_t; index: integer; str: ics.chars_ptr);
-  procedure get_field (ls: state_ptr_t; index: integer; str: string);
-  procedure get_field (ls: state_ptr_t; index: integer; str: su.unbounded_string);
-  procedure get_global (ls: state_ptr_t; str: ics.chars_ptr);
-  procedure get_global (ls: state_ptr_t; str: string);
-  procedure get_global (ls: state_ptr_t; str: su.unbounded_string);
-  procedure get_fenv (ls: state_ptr_t; index: integer);
+  procedure get_table (state: state_ptr_t; index: integer);
+   function get_metatable (state: state_ptr_t; index: integer) return error_t;
+  procedure raw_get (state: state_ptr_t; index: integer);
+  procedure raw_get_int (state: state_ptr_t; index: integer; element: integer);
+  procedure get_field (state: state_ptr_t; index: integer; str: ics.chars_ptr);
+  procedure get_field (state: state_ptr_t; index: integer; str: string);
+  procedure get_field (state: state_ptr_t; index: integer; str: su.unbounded_string);
+  procedure get_global (state: state_ptr_t; str: ics.chars_ptr);
+  procedure get_global (state: state_ptr_t; str: string);
+  procedure get_global (state: state_ptr_t; str: su.unbounded_string);
+  procedure get_fenv (state: state_ptr_t; index: integer);
 
   -- set functions (stack -> lua)
-  procedure set_table (ls: state_ptr_t; index: integer);
-   function set_metatable (ls: state_ptr_t; index: integer) return error_t;
-  procedure raw_set (ls: state_ptr_t; index: integer);
-  procedure raw_set_int (ls: state_ptr_t; index: integer; element: integer);
-  procedure set_field (ls: state_ptr_t; index: integer; str: ics.chars_ptr);
-  procedure set_field (ls: state_ptr_t; index: integer; str: string);
-  procedure set_field (ls: state_ptr_t; index: integer; str: su.unbounded_string);
-  procedure set_global (ls: state_ptr_t; str: ics.chars_ptr);
-  procedure set_global (ls: state_ptr_t; str: string);
-  procedure set_global (ls: state_ptr_t; str: su.unbounded_string);
-  function set_fenv (ls: state_ptr_t; index: integer) return error_t;
+  procedure set_table (state: state_ptr_t; index: integer);
+   function set_metatable (state: state_ptr_t; index: integer) return error_t;
+  procedure raw_set (state: state_ptr_t; index: integer);
+  procedure raw_set_int (state: state_ptr_t; index: integer; element: integer);
+  procedure set_field (state: state_ptr_t; index: integer; str: ics.chars_ptr);
+  procedure set_field (state: state_ptr_t; index: integer; str: string);
+  procedure set_field (state: state_ptr_t; index: integer; str: su.unbounded_string);
+  procedure set_global (state: state_ptr_t; str: ics.chars_ptr);
+  procedure set_global (state: state_ptr_t; str: string);
+  procedure set_global (state: state_ptr_t; str: su.unbounded_string);
+  function set_fenv (state: state_ptr_t; index: integer) return error_t;
 
   -- load functions
-  function load_buffer (ls: state_ptr_t; str: ics.chars_ptr; size: ic.size_t; name: string) return error_t;
-  function load_buffer (ls: state_ptr_t; str: string; size: natural; name: string) return error_t;
-  function load_buffer (ls: state_ptr_t; str: su.unbounded_string; name: string) return error_t;
-  function load_file (ls: state_ptr_t; file: string) return error_t;
-  function load_string (ls: state_ptr_t; str: string) return error_t;
+  function load_buffer (state: state_ptr_t; str: ics.chars_ptr; size: ic.size_t; name: string) return error_t;
+  function load_buffer (state: state_ptr_t; str: string; size: natural; name: string) return error_t;
+  function load_buffer (state: state_ptr_t; str: su.unbounded_string; name: string) return error_t;
+  function load_file (state: state_ptr_t; file: string) return error_t;
+  function load_string (state: state_ptr_t; str: string) return error_t;
 
   -- execute functions
-  function exec_file (ls: state_ptr_t; file: string) return error_t;
-  function exec_string (ls: state_ptr_t; str: string) return error_t;
+  function exec_file (state: state_ptr_t; file: string) return error_t;
+  function exec_string (state: state_ptr_t; str: string) return error_t;
 
   -- coroutines
-  function resume (ls: state_ptr_t; num_args: integer) return error_msg_t;
-  function yield (ls: state_ptr_t; nresults: int_t) return int_t;
+  function resume (state: state_ptr_t; num_args: integer) return error_msg_t;
+  function yield (state: state_ptr_t; nresults: int_t) return int_t;
   pragma import(c, yield, "lua_yield");
 
   -- misc
-  procedure concat (ls: state_ptr_t; n: natural);
-  procedure register (ls: state_ptr_t; func_name: string; func_ptr: user_func_t);
-  procedure pop (ls: state_ptr_t; count: integer);
-  function next (ls: state_ptr_t; index: integer) return integer;
+  procedure concat (state: state_ptr_t; n: natural);
+  procedure register (state: state_ptr_t; func_name: string; func_ptr: user_func_t);
+  procedure pop (state: state_ptr_t; count: integer);
+  function next (state: state_ptr_t; index: integer) return integer;
 
   type obj_ref_t is new integer;
   nil_reference: constant obj_ref_t := -1;
   no_reference: constant obj_ref_t := -2;
 
-  function reference (ls: state_ptr_t; table: integer) return obj_ref_t;
-  procedure unreference (ls: state_ptr_t; table: integer; ref: obj_ref_t);
+  function reference (state: state_ptr_t; table: integer) return obj_ref_t;
+  procedure unreference (state: state_ptr_t; table: integer; ref: obj_ref_t);
 
   pragma import (c, reference, "luaL_ref");
   pragma import (c, unreference, "luaL_unref");
 
-  function reference (ls: state_ptr_t) return obj_ref_t;
-  procedure unreference (ls: state_ptr_t; ref: obj_ref_t);
-  procedure dereference (ls: state_ptr_t; ref: obj_ref_t);
+  function reference (state: state_ptr_t) return obj_ref_t;
+  procedure unreference (state: state_ptr_t; ref: obj_ref_t);
+  procedure dereference (state: state_ptr_t; ref: obj_ref_t);
 
   -- lua calls
-  procedure call (ls: state_ptr_t; num_arguments: integer; num_results: integer);
-  function pcall (ls: state_ptr_t; num_arguments, num_results, error_func: integer) return error_t;
+  procedure call (state: state_ptr_t; num_arguments: integer; num_results: integer);
+  function pcall (state: state_ptr_t; num_arguments, num_results, error_func: integer) return error_t;
 
-  procedure error (ls: state_ptr_t);
+  procedure error (state: state_ptr_t);
   pragma no_return (error);
 
   -- versioning
@@ -232,8 +232,8 @@ package lua is
   mask_line:   constant mask_t := 2#0000_0100#;
   mask_count:  constant mask_t := 2#0000_1000#;
 
-  procedure set_hook (ls: state_ptr_t; func: hook_t; amask: mask_t; count: integer);
-  function get_hook_mask (ls: state_ptr_t) return mask_t;
+  procedure set_hook (state: state_ptr_t; func: hook_t; amask: mask_t; count: integer);
+  function get_hook_mask (state: state_ptr_t) return mask_t;
 
   private
 

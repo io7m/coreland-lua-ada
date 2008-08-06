@@ -5,21 +5,28 @@ with lua;
 package lua.lib is
 
   type reg is record
-    name: su.unbounded_string;
-    func: lua.user_func_t;
+    name : su.unbounded_string;
+    func : lua.user_func_t;
   end record;
 
   type reg_array is array (positive range <>) of reg;
 
-  function  new_metatable (ls: lua.state_ptr_t; name: string) return boolean;
-  procedure open_library  (ls: lua.state_ptr_t; name: string; funcs: reg_array; num_up: integer);
+  function new_metatable
+   (state : lua.state_ptr_t;
+    name  : string) return boolean;
 
-  procedure open_base   (ls: lua.state_ptr_t);
-  procedure open_table  (ls: lua.state_ptr_t);
-  procedure open_string (ls: lua.state_ptr_t);
-  procedure open_io     (ls: lua.state_ptr_t);
-  procedure open_math   (ls: lua.state_ptr_t);
-  procedure open_debug  (ls: lua.state_ptr_t);
+  procedure open_library
+   (state  : lua.state_ptr_t;
+    name   : string;
+    funcs  : reg_array; 
+    num_up : integer);
 
-  procedure open_libs (ls: lua.state_ptr_t);
+  procedure open_base   (state : lua.state_ptr_t);
+  procedure open_table  (state : lua.state_ptr_t);
+  procedure open_string (state : lua.state_ptr_t);
+  procedure open_io     (state : lua.state_ptr_t);
+  procedure open_math   (state : lua.state_ptr_t);
+  procedure open_debug  (state : lua.state_ptr_t);
+
+  procedure open_libs (state : lua.state_ptr_t);
 end lua.lib;
