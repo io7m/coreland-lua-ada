@@ -49,6 +49,10 @@ flags-lua:
 libs-lua-S:
 	@echo SYSDEPS lua-libs-S run create libs-lua-S 
 	@(cd SYSDEPS/modules/lua-libs-S && ./run)
+_sd_dlopen.h:
+	@echo SYSDEPS sd-dlopen run create libs-dlopen _sd_dlopen.h 
+	@(cd SYSDEPS/modules/sd-dlopen && ./run)
+libs-dlopen: _sd_dlopen.h
 
 
 lua-flags_clean:
@@ -57,11 +61,15 @@ lua-flags_clean:
 lua-libs-S_clean:
 	@echo SYSDEPS lua-libs-S clean libs-lua-S 
 	@(cd SYSDEPS/modules/lua-libs-S && ./clean)
+sd-dlopen_clean:
+	@echo SYSDEPS sd-dlopen clean libs-dlopen _sd_dlopen.h 
+	@(cd SYSDEPS/modules/sd-dlopen && ./clean)
 
 
 sysdeps_clean:\
 lua-flags_clean \
 lua-libs-S_clean \
+sd-dlopen_clean \
 
 
 # -- SYSDEPS end
@@ -186,7 +194,7 @@ conf-adacomp conf-adatype conf-systype conf-adacflags conf-adafflist flags-cwd
 
 ada-link:\
 conf-adalink conf-adatype conf-systype conf-aldfflist libs-lua-S libs-math \
-	libs-cwd
+	libs-dlopen libs-cwd
 
 ada-srcmap:\
 conf-adacomp conf-adatype conf-systype

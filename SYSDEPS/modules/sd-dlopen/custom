@@ -1,0 +1,79 @@
+#!/bin/sh
+
+head_out="$1"
+flag_out="$2"
+sysd_out="$3"
+
+DL_LIBS=""
+
+cleanup()
+{
+  rm -f trydlfunc trydlfunc.o trydlopen trydlopen.o
+  exit 0
+}
+
+head_begin()
+{
+  cat >> "${head_out}" <<EOF
+#ifndef _SD_DLOPEN_H
+#define _SD_DLOPEN_H
+ 
+EOF
+}
+
+head_end()
+{
+  cat >> "${head_out}" <<EOF
+
+#endif
+EOF
+}
+
+try_dlfunc()
+{
+  ${SYSDEP_CC} ${SYSDEP_CFLAGS} -c -o trydlfunc.o trydlfunc.c 1>/dev/null 2>&1
+  ${SYSDEP_LD} -o trydlfunc trydlfunc.o ${SYSDEP_LDFLAGS} ${DL_LIBS} 1>/dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+    return 1
+  else
+    return 0
+  fi
+}
+
+try_dlopen()
+{
+  ${SYSDEP_CC} ${SYSDEP_CFLAGS} -c -o trydlopen.o trydlopen.c 1>/dev/null 2>&1
+  ${SYSDEP_LD} -o trydlopen trydlopen.o ${SYSDEP_LDFLAGS} ${DL_LIBS} 1>/dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+    echo "dlopen-libs: ${DL_LIBS}" >> "${sysd_out}"
+    echo "${DL_LIBS}" >> "${flag_out}"
+    echo "#define HAVE_DLOPEN" >> "${head_out}"
+    try_dlfunc
+    if [ $? -eq 1 ]
+    then
+      echo "#define HAVE_DLFUNC" >> "${head_out}"
+      echo "dlopen: dlopen dlfunc" >> "${sysd_out}"
+    else
+      echo "dlopen: dlopen" >> "${sysd_out}"
+    fi
+    return 1
+  else
+    return 0
+  fi
+}
+
+touch "${flag_out}"
+head_begin
+
+DL_LIBS="-ldl"
+try_dlopen
+if [ $? -ne 0 ]; then head_end; cleanup; fi
+
+DL_LIBS=""
+try_dlopen
+if [ $? -ne 0 ]; then head_end; cleanup; fi
+
+head_end
+cleanup
