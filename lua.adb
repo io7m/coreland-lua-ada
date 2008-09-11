@@ -223,6 +223,7 @@ package body lua is
   type buffer_func is
     access function (state : state_ptr_t; data : access buffer_ctx; size : access ic.size_t)
       return ics.chars_ptr;
+  pragma convention (c, buffer_func);
 
   function lua_load_buffer (state : state_ptr_t;
     func : buffer_func;
@@ -233,7 +234,17 @@ package body lua is
   -- buffer reader callback
   -- XXX : should be C calling convention
 
-  function read_buffer (state : state_ptr_t; data : access buffer_ctx; size : access ic.size_t) return ics.chars_ptr is
+  function read_buffer
+    (state : state_ptr_t;
+     data  : access buffer_ctx;
+     size  : access ic.size_t) return ics.chars_ptr;
+  pragma convention (c, read_buffer);
+ 
+  function read_buffer
+    (state : state_ptr_t;
+     data  : access buffer_ctx;
+     size  : access ic.size_t) return ics.chars_ptr
+  is
     use type ic.size_t;
     size_alias : constant access ic.size_t := size;
   begin
