@@ -5,7 +5,7 @@ with lua.lib;
 procedure loadfile1 is
   use type lua.error_t;
 
-  ls: lua.state_ptr_t;
+  ls: lua.state_t;
   ec: lua.error_t;
 begin
   ls := lua.open;

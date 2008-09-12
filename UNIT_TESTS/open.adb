@@ -4,10 +4,10 @@ with lua;
 -- the majority of strange code here is to stop very strict compilers from
 -- complaining about unread or unreferenced variables.
 procedure open is
-  use type lua.state_ptr_t;
+  use type lua.state_t;
 
-  ls: lua.state_ptr_t;
-  lsdummy: lua.state_ptr_t;
+  ls: lua.state_t;
+  lsdummy: lua.state_t;
 begin
   ls := lua.open;
   lsdummy := ls;
