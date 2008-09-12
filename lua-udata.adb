@@ -1,16 +1,22 @@
 -- Lua userdata handling
 
 package body lua.udata is
-  
-  function lua_newuserdata (state : lua.state_ptr_t; size : lua.ic.size_t)
-    return system.address;
-  pragma import (c, lua_newuserdata, "lua_newuserdata");
 
-  function lua_touserdata  (state : lua.state_ptr_t; index : lua.int_t)
-    return system.address;
-  pragma import (c, lua_touserdata, "lua_touserdata");
+  use type system.address;
 
-  procedure register (state : lua.state_ptr_t) is
+  package cbinds is
+    function new_user_data
+     (state : lua.state_t;
+      size  : lua.ic.size_t) return system.address;
+    pragma import (c, new_user_data, "lua_newuserdata");
+
+    function to_user_data
+     (state : lua.state_t;
+      index : lua.int_t) return system.address;
+    pragma import (c, to_user_data, "lua_touserdata");
+  end cbinds;
+
+  procedure register (state : lua.state_t) is
     dummy : boolean;
   begin
     lua.lib.open_library (state, class_name, method_table, 0);
@@ -25,13 +31,16 @@ package body lua.udata is
     lua.raw_set (state, -3);
     lua.pop (state, 1);
   end register;
-  
-  procedure push (state : lua.state_ptr_t; item : udata_t) is
-    x : udata_ptr_t;
+
+  procedure push
+   (state : lua.state_t;
+    item  : udata_t)
+  is
+    x     : udata_access_t;
     error : lua.error_t;
   begin
-    x := udata_ptr_t (convert.to_pointer
-      (lua_newuserdata (state, lua.ic.size_t (udata_t'size / 8))));
+    x := udata_access_t (convert.to_pointer
+      (cbinds.new_user_data (state, lua.ic.size_t (udata_t'size / 8))));
 
     x.all := item;
     lua.push_string (state, class_name);
@@ -40,12 +49,13 @@ package body lua.udata is
     if error /= lua.lua_error_none then return; end if;
   end push;
 
-  function get (state : lua.state_ptr_t; index : integer := 1) return udata_t is
-    use system;
-    sa : constant system.address := lua_touserdata (state, lua.int_t (index));
+  function get
+   (state : lua.state_t;
+    index : integer := 1) return udata_t
+  is
+    sa : constant system.address := cbinds.to_user_data (state, lua.int_t (index));
   begin
     return convert.to_pointer (sa).all;
   end get;
-  pragma inline (get);
-  
+
 end lua.udata;

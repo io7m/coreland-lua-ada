@@ -54,21 +54,6 @@ package lua is
   type debug_t is private;
   type obj_ref_t is new integer;
 
-  nil_reference : constant obj_ref_t := -1;
-  no_reference  : constant obj_ref_t := -2;
-
-  state_error : constant state_t;
-
-  registryindex : constant int_t := -10000;
-  environindex  : constant int_t := -10001;
-  globalsindex  : constant int_t := -10002;
-  multret       : constant int_t := -1;
-
-  registry_index : constant integer := -10000;
-  environ_index  : constant integer := -10001;
-  globals_index  : constant integer := -10002;
-  mult_ret       : constant integer := -1;
-
   type user_func_t is access function (state : state_t) return int_t;
   pragma convention (c, user_func_t);
 
@@ -104,11 +89,30 @@ package lua is
 
   type mask_t is mod 16;
 
-  mask_none   : constant mask_t := 2#0000_0000#;
-  mask_call   : constant mask_t := 2#0000_0001#;
-  mask_return : constant mask_t := 2#0000_0010#;
-  mask_line   : constant mask_t := 2#0000_0100#;
-  mask_count  : constant mask_t := 2#0000_1000#;
+  --
+  -- constants
+  --
+
+  mask_none      : constant mask_t := 2#0000_0000#;
+  mask_call      : constant mask_t := 2#0000_0001#;
+  mask_return    : constant mask_t := 2#0000_0010#;
+  mask_line      : constant mask_t := 2#0000_0100#;
+  mask_count     : constant mask_t := 2#0000_1000#;
+
+  nil_reference  : constant obj_ref_t := -1;
+  no_reference   : constant obj_ref_t := -2;
+
+  state_error    : constant state_t;
+
+  registryindex  : constant int_t := -10000;
+  environindex   : constant int_t := -10001;
+  globalsindex   : constant int_t := -10002;
+  multret        : constant int_t := -1;
+
+  registry_index : constant integer := -10000;
+  environ_index  : constant integer := -10001;
+  globals_index  : constant integer := -10002;
+  mult_ret       : constant integer := -1;
 
   --
   -- API
@@ -237,6 +241,10 @@ package lua is
 
   procedure push_string
    (state : state_t;
+    str   : ics.chars_ptr);
+
+  procedure push_string
+   (state : state_t;
     str   : string);
 
   procedure push_string
@@ -246,7 +254,7 @@ package lua is
   procedure push_string
    (state   : state_t;
     address : system.address;
-    amount  : positive);
+    size    : positive);
 
   procedure push_user_closure
    (state      : state_t;
@@ -285,29 +293,29 @@ package lua is
   procedure get_field
    (state : state_t;
     index : integer;
-    str   : ics.chars_ptr);
+    key   : ics.chars_ptr);
 
   procedure get_field
    (state : state_t;
     index : integer;
-    str   : string);
+    key   : string);
 
   procedure get_field
    (state : state_t;
     index : integer;
-    str   : su.unbounded_string);
+    key   : su.unbounded_string);
 
   procedure get_global
    (state : state_t;
-    str   : ics.chars_ptr);
+    key   : ics.chars_ptr);
 
   procedure get_global
    (state : state_t;
-    str   : string);
+    key   : string);
 
   procedure get_global
    (state : state_t;
-    str   : su.unbounded_string);
+    key   : su.unbounded_string);
 
   procedure get_fenv
    (state : state_t;
@@ -335,29 +343,29 @@ package lua is
   procedure set_field
    (state : state_t;
     index : integer;
-    str   : ics.chars_ptr);
+    key   : ics.chars_ptr);
 
   procedure set_field
    (state : state_t;
     index : integer;
-    str   : string);
+    key   : string);
 
   procedure set_field
    (state : state_t;
     index : integer;
-    str   : su.unbounded_string);
+    key   : su.unbounded_string);
 
   procedure set_global
    (state : state_t;
-    str   : ics.chars_ptr);
+    key   : ics.chars_ptr);
 
   procedure set_global
    (state : state_t;
-    str   : string);
+    key   : string);
 
   procedure set_global
    (state : state_t;
-    str   : su.unbounded_string);
+    key   : su.unbounded_string);
 
   function set_fenv
    (state : state_t;
@@ -402,8 +410,8 @@ package lua is
 
   -- coroutines
   function resume
-   (state    : state_t;
-    num_args : integer) return error_msg_t;
+   (state         : state_t;
+    num_arguments : integer) return error_msg_t;
 
   function yield
    (state    : state_t;

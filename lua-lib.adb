@@ -2,7 +2,9 @@
 
 package body lua.lib is
 
-  function new_metatable (state : lua.state_ptr_t; name : string) return boolean is
+  function new_metatable
+   (state : lua.state_t;
+    name  : string) return boolean is
   begin
     lua.push_string (state, name);
     lua.raw_get (state, lua.registry_index);
@@ -31,7 +33,10 @@ package body lua.lib is
     return true;
   end new_metatable;
 
-  procedure open_library (state : lua.state_ptr_t; name : string; funcs : reg_array;
+  procedure open_library
+   (state  : lua.state_t;
+    name   : string;
+    funcs  : register_array_t;
     num_up : integer) is
   begin
     if name /= "" then
@@ -58,61 +63,5 @@ package body lua.lib is
 
     lua.pop (state, num_up);
   end open_library;
-
-  procedure lua_openbase (state : lua.state_ptr_t);
-  pragma import (c, lua_openbase, "luaopen_base");
-
-  procedure open_base (state : lua.state_ptr_t) is
-  begin
-    lua_openbase (state);
-  end open_base;
-
-  procedure lua_opentable (state : lua.state_ptr_t);
-  pragma import (c, lua_opentable, "luaopen_table");
-
-  procedure open_table (state : lua.state_ptr_t) is
-  begin
-    lua_opentable (state);
-  end open_table;
-
-  procedure lua_openstring (state : lua.state_ptr_t);
-  pragma import (c, lua_openstring, "luaopen_string");
-
-  procedure open_string (state : lua.state_ptr_t) is
-  begin
-    lua_openstring (state);
-  end open_string;
-
-  procedure lua_openio (state : lua.state_ptr_t);
-  pragma import (c, lua_openio, "luaopen_io");
-
-  procedure open_io (state : lua.state_ptr_t) is
-  begin
-    lua_openio (state);
-  end open_io;
-
-  procedure lua_openmath (state : lua.state_ptr_t);
-  pragma import (c, lua_openmath, "luaopen_math");
-
-  procedure open_math (state : lua.state_ptr_t) is
-  begin
-    lua_openmath (state);
-  end open_math;
-
-  procedure lua_opendebug (state : lua.state_ptr_t);
-  pragma import (c, lua_opendebug, "luaopen_debug");
-
-  procedure open_debug (state : lua.state_ptr_t) is
-  begin
-    lua_opendebug (state);
-  end open_debug;
-
-  procedure lual_openlibs (state : lua.state_ptr_t);
-  pragma import (c, lual_openlibs, "luaL_openlibs");
-
-  procedure open_libs (state : lua.state_ptr_t) is
-  begin
-    lual_openlibs (state);
-  end open_libs;
 
 end lua.lib;

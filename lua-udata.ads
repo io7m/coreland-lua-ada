@@ -7,8 +7,8 @@ with lua.lib;
 generic
   type udata_t is private;
   class_name   : string;
-  method_table : lua.lib.reg_array;
-  meta_table   : lua.lib.reg_array;
+  method_table : lua.lib.register_array_t;
+  meta_table   : lua.lib.register_array_t;
 
 package lua.udata is
   package convert is new system.address_to_access_conversions (udata_t);
@@ -24,5 +24,6 @@ package lua.udata is
   function get
    (state : lua.state_t;
     index : integer := 1) return udata_t;
+  pragma inline (get);
 
 end lua.udata;
