@@ -7,7 +7,6 @@ package body lua is
   package io renames ada.text_io;
 
   use type ic.size_t;
-  use type ics.chars_ptr;
 
   --
   -- C functions.
