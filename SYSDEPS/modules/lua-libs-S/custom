@@ -43,8 +43,8 @@ case ${SYSDEP_OS} in
       do
         if [ -f "${basedir}/${lib}" ]
         then
-          echo "${basedir}/${lib} " >> "${temp_f}"
-          echo "lua-libs-S: ${basedir}/${lib} " >> "${temp_sys}"
+          echo "${basedir}/${lib} -ldl " >> "${temp_f}"
+          echo "lua-libs-S: ${basedir}/${lib} -ldl " >> "${temp_sys}"
           exit 0
         fi
       done
