@@ -15,8 +15,8 @@ UNIT_TESTS/utest.o ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o \
 ctxt/repos.o ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o \
 install-core.o install-error.o install-posix.o install-win32.o install.a \
 installer installer.o instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o \
-lua-ada.a lua-ext.o lua-lib.ali lua-lib.o lua-udata.ali lua-udata.o lua.ali \
-lua.o
+lua-ada.a lua-ext.o lua-lib.ali lua-lib.o lua-load_typed.ali lua-load_typed.o \
+lua-udata.ali lua-udata.o lua.ali lua.o
 
 # Mkf-deinstall
 deinstall: deinstaller conf-sosuffix
@@ -53,6 +53,9 @@ _sd_dlopen.h:
 	@echo SYSDEPS sd-dlopen run create libs-dlopen _sd_dlopen.h 
 	@(cd SYSDEPS/modules/sd-dlopen && ./run)
 libs-dlopen: _sd_dlopen.h
+_sysinfo.h:
+	@echo SYSDEPS sysinfo run create _sysinfo.h 
+	@(cd SYSDEPS/modules/sysinfo && ./run)
 
 
 lua-flags_clean:
@@ -64,12 +67,16 @@ lua-libs-S_clean:
 sd-dlopen_clean:
 	@echo SYSDEPS sd-dlopen clean libs-dlopen _sd_dlopen.h 
 	@(cd SYSDEPS/modules/sd-dlopen && ./clean)
+sysinfo_clean:
+	@echo SYSDEPS sysinfo clean _sysinfo.h 
+	@(cd SYSDEPS/modules/sysinfo && ./clean)
 
 
 sysdeps_clean:\
 lua-flags_clean \
 lua-libs-S_clean \
 sd-dlopen_clean \
+sysinfo_clean \
 
 
 # -- SYSDEPS end
@@ -349,12 +356,12 @@ cc-link lua-ada-conf.ld lua-ada-conf.o ctxt/ctxt.a
 	./cc-link lua-ada-conf lua-ada-conf.o ctxt/ctxt.a
 
 lua-ada-conf.o:\
-cc-compile lua-ada-conf.c ctxt.h
+cc-compile lua-ada-conf.c ctxt.h _sysinfo.h
 	./cc-compile lua-ada-conf.c
 
 lua-ada.a:\
-cc-slib lua-ada.sld lua-lib.o lua-udata.o lua.o lua-ext.o
-	./cc-slib lua-ada lua-lib.o lua-udata.o lua.o lua-ext.o
+cc-slib lua-ada.sld lua-ext.o lua-lib.o lua-load_typed.o lua-udata.o lua.o
+	./cc-slib lua-ada lua-ext.o lua-lib.o lua-load_typed.o lua-udata.o lua.o
 
 lua-ext.o:\
 cc-compile lua-ext.c
@@ -369,6 +376,13 @@ ada-compile lua-lib.adb lua-lib.ads
 
 lua-lib.o:\
 lua-lib.ali
+
+lua-load_typed.ali:\
+ada-compile lua-load_typed.adb
+	./ada-compile lua-load_typed.adb
+
+lua-load_typed.o:\
+lua-load_typed.ali
 
 lua-udata.ads:\
 lua.ads lua-lib.ads
@@ -425,8 +439,8 @@ obj_clean:
 	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o deinstaller \
 	deinstaller.o install-core.o install-error.o install-posix.o install-win32.o \
 	install.a installer installer.o instchk instchk.o insthier.o lua-ada-conf \
-	lua-ada-conf.o lua-ada.a lua-ext.o lua-lib.ali lua-lib.o lua-udata.ali \
-	lua-udata.o lua.ali lua.o
+	lua-ada-conf.o lua-ada.a lua-ext.o lua-lib.ali lua-lib.o lua-load_typed.ali \
+	lua-load_typed.o lua-udata.ali lua-udata.o lua.ali lua.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 

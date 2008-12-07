@@ -3,6 +3,10 @@
 pragma source_file_name(lua.lib, spec_file_name => "lua-lib.ads");
 pragma source_file_name(lua.lib, body_file_name => "lua-lib.adb");
 
+-- ./lua-load_typed.apk
+pragma source_file_name(lua.load_buffer, spec_file_name => "lua-load_buffer.ads");
+pragma source_file_name(lua.load_buffer, body_file_name => "lua-load_buffer.adb");
+
 -- ./lua-udata.apk
 pragma source_file_name(lua.udata, spec_file_name => "lua-udata.ads");
 pragma source_file_name(lua.udata, body_file_name => "lua-udata.adb");

@@ -2,3 +2,4 @@
 20080912 code: large API and type cleanup.
 20081207 code: updated installer.
 20081207 code: another API cleanup in progress.
+20081207 code: added lua.load_typed for better interfacing with other libs.

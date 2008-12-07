@@ -342,13 +342,6 @@ package body lua is
       name  : ics.chars_ptr) return int_t;
     pragma import (c, lua_load_buffer, "lua_load");
 
-    function lua_load
-      (state      : state_t;
-       reader     : chunk_reader_t;
-       data       : system.address;
-       chunk_name : ics.chars_ptr) return ic.int;
-    pragma import (c, lua_load, "lua_load");
-
     function read_buffer
      (state : state_t;
       data  : buffer_context_access_t;
@@ -379,21 +372,6 @@ package body lua is
   --
   -- load functions
   --
-
-  function load
-    (state      : state_t;
-     reader     : chunk_reader_t;
-     data       : system.address;
-     chunk_name : string) return error_t
-  is
-    c_chunk_name : aliased ic.char_array := ic.to_c (chunk_name);
-  begin
-    return error_t'val (cbinds.lua_load
-      (state      => state,
-       reader     => reader,
-       data       => data,
-       chunk_name => ics.to_chars_ptr (c_chunk_name'unchecked_access)));
-  end load;
 
   function load_buffer
    (state  : state_t;

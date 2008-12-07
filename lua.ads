@@ -373,12 +373,6 @@ package lua is
 
   -- load functions
 
-  function load
-    (state      : state_t;
-     reader     : chunk_reader_t;
-     data       : system.address;
-     chunk_name : string) return error_t;
-
   function load_buffer
    (state  : state_t;
     buffer : ics.chars_ptr;
