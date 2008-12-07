@@ -64,15 +64,15 @@ package lua is
 
   type chunk_reader_t is access function
    (state : state_t;
-    data  : ics.chars_ptr;
-    size  : access ic.size_t) return ics.chars_ptr;
+    data  : system.address;
+    size  : access ic.size_t) return system.address;
   pragma convention (c, chunk_reader_t);
 
   type chunk_writer_t is access function
    (state : state_t;
-    p     : ics.chars_ptr;
+    p     : system.address;
     size  : ic.size_t;
-    data  : ics.chars_ptr) return int_t;
+    data  : system.address) return int_t;
   pragma convention (c, chunk_writer_t);
 
   type type_t is
@@ -373,30 +373,36 @@ package lua is
 
   -- load functions
 
-  function load_buffer
-   (state : state_t;
-    str   : ics.chars_ptr;
-    size  : ic.size_t;
-    name  : string) return error_t;
+  function load
+    (state      : state_t;
+     reader     : chunk_reader_t;
+     data       : system.address;
+     chunk_name : string) return error_t;
 
   function load_buffer
-   (state : state_t;
-    str   : string;
-    size  : natural;
-    name  : string) return error_t;
+   (state  : state_t;
+    buffer : ics.chars_ptr;
+    size   : ic.size_t;
+    name   : string) return error_t;
 
   function load_buffer
-   (state : state_t;
-    str   : su.unbounded_string;
-    name  : string) return error_t;
+   (state  : state_t;
+    buffer : string;
+    size   : natural;
+    name   : string) return error_t;
+
+  function load_buffer
+   (state  : state_t;
+    buffer : su.unbounded_string;
+    name   : string) return error_t;
 
   function load_file
    (state : state_t;
     file  : string) return error_t;
 
   function load_string
-   (state : state_t;
-    str   : string) return error_t;
+   (state  : state_t;
+    buffer : string) return error_t;
 
   -- execute functions
 

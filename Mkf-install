@@ -1,6 +1,6 @@
-install: installer inst-check inst-copy inst-dir inst-link postinstall
+install: installer postinstall conf-sosuffix
 	./installer
 	./postinstall
 
-install-dryrun: installer inst-check inst-copy inst-dir inst-link
+install-dryrun: installer conf-sosuffix
 	./installer dryrun

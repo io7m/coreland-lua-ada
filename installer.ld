@@ -1,5 +1,4 @@
 installer.o
 insthier.o
-install_core.o
-install_error.o
+install.a
 ctxt/ctxt.a

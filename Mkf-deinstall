@@ -1,4 +1,4 @@
-deinstall: deinstaller inst-check inst-copy inst-dir inst-link
+deinstall: deinstaller conf-sosuffix
 	./deinstaller
-deinstall-dryrun: deinstaller inst-check inst-copy inst-dir inst-link
+deinstall-dryrun: deinstaller conf-sosuffix
 	./deinstaller dryrun

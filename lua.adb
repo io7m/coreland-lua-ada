@@ -322,8 +322,8 @@ package body lua is
     pragma import (c, lua_resume, "lua_resume");
 
     type buffer_context_t is record
-      buff : ics.chars_ptr;
-      size : ic.size_t;
+      buffer      : ics.chars_ptr;
+      buffer_size : ic.size_t;
     end record;
     type buffer_context_access_t is access all buffer_context_t;
     pragma convention (c, buffer_context_t);
@@ -342,6 +342,13 @@ package body lua is
       name  : ics.chars_ptr) return int_t;
     pragma import (c, lua_load_buffer, "lua_load");
 
+    function lua_load
+      (state      : state_t;
+       reader     : chunk_reader_t;
+       data       : system.address;
+       chunk_name : ics.chars_ptr) return ic.int;
+    pragma import (c, lua_load, "lua_load");
+
     function read_buffer
      (state : state_t;
       data  : buffer_context_access_t;
@@ -359,12 +366,12 @@ package body lua is
     is
       size_alias : constant access ic.size_t := size;
     begin
-      if data.size = 0 then
+      if data.buffer_size = 0 then
         return ics.null_ptr;
       end if;
-      size_alias.all := data.size;
-      data.size      := 0;
-      return data.buff;
+      size_alias.all   := data.buffer_size;
+      data.buffer_size := 0;
+      return data.buffer;
     end read_buffer;
 
   end cbinds;
@@ -373,15 +380,30 @@ package body lua is
   -- load functions
   --
 
+  function load
+    (state      : state_t;
+     reader     : chunk_reader_t;
+     data       : system.address;
+     chunk_name : string) return error_t
+  is
+    c_chunk_name : aliased ic.char_array := ic.to_c (chunk_name);
+  begin
+    return error_t'val (cbinds.lua_load
+      (state      => state,
+       reader     => reader,
+       data       => data,
+       chunk_name => ics.to_chars_ptr (c_chunk_name'unchecked_access)));
+  end load;
+
   function load_buffer
-   (state : state_t;
-    str   : ics.chars_ptr;
-    size  : ic.size_t;
-    name  : string)
+   (state  : state_t;
+    buffer : ics.chars_ptr;
+    size   : ic.size_t;
+    name   : string)
     return error_t
   is
     ch_array : aliased ic.char_array           := ic.to_c (name);
-    context  : aliased cbinds.buffer_context_t := (str, size);
+    context  : aliased cbinds.buffer_context_t := (buffer, size);
   begin
     return error_t'val (cbinds.lua_load_buffer
       (state => state,
@@ -391,30 +413,30 @@ package body lua is
   end load_buffer;
 
   function load_buffer
-   (state : state_t;
-    str   : string;
-    size  : natural;
-    name  : string) return error_t
+   (state  : state_t;
+    buffer : string;
+    size   : natural;
+    name   : string) return error_t
   is
-    ch_array : aliased ic.char_array := ic.to_c (str);
+    ch_array : aliased ic.char_array := ic.to_c (buffer);
   begin
     return load_buffer
-      (state => state,
-       str   => ics.to_chars_ptr (ch_array'unchecked_access),
-       size  => ic.size_t (size),
-       name  => name);
+      (state  => state,
+       buffer => ics.to_chars_ptr (ch_array'unchecked_access),
+       size   => ic.size_t (size),
+       name   => name);
   end load_buffer;
 
   function load_buffer
-   (state : state_t;
-    str   : su.Unbounded_string;
-    name  : string) return error_t is
+   (state  : state_t;
+    buffer : su.unbounded_string;
+    name   : string) return error_t is
   begin
     return load_buffer
-      (state => state,
-       str   => su.to_string (str),
-       size  => su.length (str),
-       name  => name);
+      (state  => state,
+       buffer => su.to_string (buffer),
+       size   => su.length (buffer),
+       name   => name);
   end load_buffer;
 
   function load_file
@@ -436,15 +458,15 @@ package body lua is
   end load_file;
 
   function load_string
-   (state : state_t;
-    str   : string) return error_t
+   (state  : state_t;
+    buffer : string) return error_t
   is
   begin
     return load_buffer
-      (state => state,
-       str   => str,
-       size  => str'last,
-       name  => "");
+      (state  => state,
+       buffer => buffer,
+       size   => buffer'last,
+       name   => "");
   end load_string;
 
   --
@@ -778,7 +800,7 @@ package body lua is
 
   procedure push_string
    (state : state_t;
-    str   : su.Unbounded_string)
+    str   : su.unbounded_string)
   is
     ch_array : aliased ic.char_array := ic.to_c (su.to_string (str));
   begin
