@@ -1,11 +1,27 @@
 #!/bin/sh
-# $Id$
 
-SYS_TYPE=`head -n 1 conf-systype`
+fatal()
+{
+  echo "mk-sosuffix: fatal: $1" 1>&2
+  exit 1
+}
+
+#
+# check if base directory was specified
+#
+
+BASE_DIR="."
+echo "$1" | grep '^@' 2>&1 >/dev/null
+if [ $? -eq 0 ]
+then
+  BASE_DIR=`echo $1 | sed 's/^@//g'`
+  shift
+fi
+
+SYS_TYPE=`head -n 1 "${BASE_DIR}/conf-systype"`
 if [ $? -ne 0 ]
 then
-  echo "fatal: could not read conf-systype" 1>&2
-  exit 1
+  fatal "could not read ${BASE_DIR}/conf-systype"
 fi
 
 case "${SYS_TYPE}" in

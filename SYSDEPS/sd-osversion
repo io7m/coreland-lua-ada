@@ -13,6 +13,9 @@ case "$sys" in
   SYSDEP_OS_VMS)
     ver=`uname -v`
     ;;
+  SYSDEP_OS_MS_WINDOWS)
+    ver=`uname -s | awk -F- '{print $NF}'`
+    ;;
   *)
     ver=`uname -r`
     if [ $? -ne 0 ]

@@ -2,7 +2,7 @@
 
 fatal()
 {
-  echo "fatal: $1" 1>&2
+  echo "ada-srcmap: fatal: $1" 1>&2
   exit 1
 }
 
@@ -34,13 +34,25 @@ EOF
 
 if [ $# -lt 1 ]
 then
-  echo "usage: file.apk" 1>&2
+  echo "ada-srcmap: usage: [@dir] file.apk" 1>&2
   exit 1
 fi
 
-ADA=`head -n 1 conf-adacomp` || fatal "could not read conf-adacomp"
-SYSTYPE=`head -n 1 conf-systype` || fatal "could not read conf-systype"
-ADATYPE=`head -n 1 conf-adatype` || fatal "could not read conf-adatype"
+#
+# check if base directory was specified
+#
+
+BASE_DIR="."
+echo "$1" | grep '^@' 2>&1 >/dev/null
+if [ $? -eq 0 ]
+then
+  BASE_DIR=`echo $1 | sed 's/^@//g'`
+  shift
+fi
+
+ADA=`head -n 1 ${BASE_DIR}/conf-adacomp` || fatal "could not read ${BASE_DIR}/conf-adacomp"
+SYSTYPE=`head -n 1 ${BASE_DIR}/conf-systype` || fatal "could not read ${BASE_DIR}/conf-systype"
+ADATYPE=`head -n 1 ${BASE_DIR}/conf-adatype` || fatal "could not read ${BASE_DIR}/conf-adatype"
 
 pkg=`head -n 1 "$1" | awk '{print $1}'` || fatal "could not read package name"
 spec=`head -n 1 "$1" | awk '{print $2}'` || fatal "could not read package spec"

@@ -1,25 +1,47 @@
 #!/bin/sh
-# $Id$
+
+fatal()
+{
+  echo "mk-systype: fatal: $1" 1>&2
+  cleanup
+  exit 1
+}
 
 cleanup()
 {
-  rm -f _mk_systype.c _mk_systype
+  rm -f _mk_systype.c _mk_systype _mk_systype.exe
 }
 
-SYS_CC=`head -n 1 conf-cc`
-if [ $? -ne 0 ]
+#
+# check if base directory was specified
+#
+
+BASE_DIR="."
+echo "$1" | grep '^@' 2>&1 >/dev/null
+if [ $? -eq 0 ]
 then
-  echo "fatal: could not read conf-cc" 1>&2
-  exit 1
+  BASE_DIR=`echo $1 | sed 's/^@//g'`
+  shift
 fi
 
-if [ -f conf-x-systype ]
+SYS_CC=`head -n 1 ${BASE_DIR}/conf-cc`
+if [ $? -ne 0 ]
 then
-  SYS=`head -n 1 conf-x-systype`
+  fatal "could not read ${BASE_DIR}/conf-cc"
+fi
+
+SYS_LD=`head -n 1 ${BASE_DIR}/conf-ld`
+if [ $? -ne 0 ]
+then
+  fatal "could not read ${BASE_DIR}/conf-ld"
+fi
+
+if [ -f "${BASE_DIR}/conf-x-systype" ]
+then
+  SYS=`head -n 1 "${BASE_DIR}/conf-x-systype"`
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not read conf-x-systype" 1>&2
-    exit 1
+    fatal "could not read ${BASE_DIR}/conf-x-systype"
   fi
   echo "${SYS}"
 else
@@ -143,23 +165,17 @@ EOF
 ) > _mk_systype.c
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not create _mk_systype.c" 1>&2
-    cleanup
-    exit 1
+    fatal "could not create _mk_systype.c"
   fi
-  ${SYS_CC} -o _mk_systype _mk_systype.c
+  ${SYS_LD} -o _mk_systype _mk_systype.c
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not create _mk_systype" 1>&2
-    cleanup
-    exit 1
+    fatal "could not create _mk_systype"
   fi
-  ./_mk_systype
+  ./_mk_systype | tr -cd '[[:alnum:]_\n]'
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not execute _mk_systype" 1>&2
-    cleanup
-    exit 1
+    fatal "could not execute _mk_systype"
   fi
 fi
 

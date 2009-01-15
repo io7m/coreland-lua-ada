@@ -2,13 +2,32 @@
 
 cleanup()
 {
-  rm -f _mk_cctype.c _mk_cctype
+  rm -f _mk_cctype.c _mk_cctype _mk_cctype.exe
 }
 
-SYS_CC=`head -n 1 conf-cc`
+fatal()
+{
+  echo "mk-cctype: fatal: $1" 1>&2
+  cleanup
+  exit 1
+}
+
+#
+# check if base directory was specified
+#
+
+BASE_DIR="."
+echo "$1" | grep '^@' 2>&1 >/dev/null
+if [ $? -eq 0 ]
+then
+  BASE_DIR=`echo $1 | sed 's/^@//g'`
+  shift
+fi
+
+SYS_CC=`head -n 1 ${BASE_DIR}/conf-cc`
 if [ $? -ne 0 ]
 then
-  echo "fatal: could not read conf-cc" 1>&2
+  fatal "could not read ${BASE_DIR}/conf-cc"
   exit 1
 fi
 
@@ -18,12 +37,12 @@ fi
 # this system.
 #
 
-if [ -f conf-x-cctype ]
+if [ -f ${BASE_DIR}/conf-x-cctype ]
 then
-  TYPE=`head -n 1 conf-x-cctype`
+  TYPE=`head -n 1 ${BASE_DIR}/conf-x-cctype`
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not read conf-x-cctype" 1>&2
+    fatal "could not read ${BASE_DIR}/conf-x-cctype"
     cleanup
     exit 1
   fi
@@ -186,23 +205,17 @@ EOF
 ) > _mk_cctype.c
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not create _mk_cctype.c" 1>&2
-    cleanup
-    exit 1
+    fatal "could not create _mk_cctype.c"
   fi
   ${SYS_CC} -o _mk_cctype _mk_cctype.c
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not create _mk_cctype" 1>&2
-    cleanup
-    exit 1
+    fatal "could not create _mk_cctype"
   fi
-  ./_mk_cctype
+  ./_mk_cctype | tr -cd '[[:alnum:]_\n]'
   if [ $? -ne 0 ]
   then
-    echo "fatal: could not execute _mk_cctype" 1>&2
-    cleanup
-    exit 1
+    fatal "could not execute _mk_cctype"
   fi
 fi
 

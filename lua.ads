@@ -128,6 +128,10 @@ package lua is
    (state          : state_t;
     panic_function : user_func_t) return user_func_t;
 
+  procedure at_panic
+   (state          : state_t;
+    panic_function : user_func_t);
+
   -- stack manipulation
 
   function get_top (state : state_t) return integer;

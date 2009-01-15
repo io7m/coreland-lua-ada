@@ -1,71 +1,30 @@
 #!/bin/sh
 
+fatal()
+{
+  echo "cc-compile: fatal: $1" 1>&2
+  exit 1
+}
+
 if [ $# -lt 1 ]
 then
-  echo "usage: source" 1>&2
+  echo "cc-compile: usage: [@dir] source" 1>&2
   exit 1
 fi
 
 #
-# Assume source is being cross compiled if there is a cross-compiler
-# defined.
+# check if new base dir was specified
 #
 
-if [ -f conf-x-cc ]
+BASE_DIR="."
+if [ $# -gt 1 ]
 then
-  CC=`head -n 1 conf-x-cc`
-  if [ $? -ne 0 ]
+  echo "$1" | grep '^@' >/dev/null
+  if [ $? -eq 0 ]
   then
-    echo "fatal: could not read conf-x-cc" 1>&2
-    exit 1
+    BASE_DIR=`echo "$1" | sed 's/^@//g'`
+    shift
   fi
-  SYSTYPE=`head -n 1 conf-x-systype`
-  if [ $? -ne 0 ]
-  then
-    echo "fatal: could not read conf-x-systype" 1>&2
-    exit 1
-  fi
-  CCTYPE=`head -n 1 conf-x-cctype`
-  if [ $? -ne 0 ]
-  then
-    echo "fatal: could not read conf-x-cctype" 1>&2
-    exit 1
-  fi
-  CFLAGS="${CFLAGS} `head -n 1 conf-x-cflags 2>/dev/null`"
-else
-  CC=`head -n 1 conf-cc`
-  if [ $? -ne 0 ]
-  then
-    echo "fatal: could not read conf-cc" 1>&2
-    exit 1
-  fi
-  SYSTYPE=`head -n 1 conf-systype`
-  if [ $? -ne 0 ]
-  then
-    echo "fatal: could not read conf-systype" 1>&2
-    exit 1
-  fi
-  CCTYPE=`head -n 1 conf-cctype`
-  if [ $? -ne 0 ]
-  then
-    echo "fatal: could not read conf-cctype" 1>&2
-    exit 1
-  fi
-fi
-
-CFLAGS="${CFLAGS} `head -n 1 conf-cflags 2>/dev/null`"
-
-#
-# Read global flag file list, if present.
-#
-
-if [ -f "conf-ccfflist" ]
-then
-  for f in `cat "conf-ccfflist"`
-  do
-    FLAGS=`cat $f 2>/dev/null`
-    CFLAGS="${CFLAGS} ${FLAGS}"
-  done
 fi
 
 #
@@ -75,6 +34,62 @@ fi
 out=`echo "$1" | awk -F. '{print $1}'`
 src="$1"
 shift
+
+#
+# Assume source is being cross compiled if there is a cross-compiler
+# defined.
+#
+
+if [ -f "${BASE_DIR}/conf-x-cc" ]
+then
+  CC=`head -n 1 "${BASE_DIR}/conf-x-cc"`
+  if [ $? -ne 0 ]
+  then
+    fatal "could not read ${BASE_DIR}/conf-x-cc"
+  fi
+  SYSTYPE=`head -n 1 "${BASE_DIR}/conf-x-systype"`
+  if [ $? -ne 0 ]
+  then
+    fatal "could not read ${BASE_DIR}/conf-x-systype"
+  fi
+  CCTYPE=`head -n 1 "${BASE_DIR}/conf-x-cctype"`
+  if [ $? -ne 0 ]
+  then
+    fatal "could not read ${BASE_DIR}/conf-x-cctype"
+  fi
+  CFLAGS="${CFLAGS} `head -n 1 "${BASE_DIR}/conf-x-cflags" 2>/dev/null`"
+else
+  CC=`head -n 1 "${BASE_DIR}/conf-cc"`
+  if [ $? -ne 0 ]
+  then
+    fatal "could not read ${BASE_DIR}/conf-cc"
+  fi
+  SYSTYPE=`head -n 1 "${BASE_DIR}/conf-systype"`
+  if [ $? -ne 0 ]
+  then
+    fatal "could not read ${BASE_DIR}/conf-systype"
+  fi
+  CCTYPE=`head -n 1 "${BASE_DIR}/conf-cctype"`
+  if [ $? -ne 0 ]
+  then
+    fatal "could not read ${BASE_DIR}/conf-cctype"
+  fi
+fi
+
+CFLAGS="${CFLAGS} `head -n 1 ${BASE_DIR}/conf-cflags 2>/dev/null`"
+
+#
+# Read global flag file list, if present.
+#
+
+if [ -f "${BASE_DIR}/conf-ccfflist" ]
+then
+  for f in `cat "${BASE_DIR}/conf-ccfflist"`
+  do
+    FLAGS=`cat $f 2>/dev/null`
+    CFLAGS="${CFLAGS} ${FLAGS}"
+  done
+fi
 
 #
 # Read local flag file list, if present.

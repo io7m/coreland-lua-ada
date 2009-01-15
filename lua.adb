@@ -276,6 +276,10 @@ package body lua is
     function lua_atpanic
      (state : state_t;
       func  : user_func_t) return user_func_t;
+
+    procedure lua_atpanic
+     (state : state_t;
+      func  : user_func_t);
     pragma import (c, lua_atpanic, "lua_atpanic");
 
     procedure lua_error (state : state_t);
@@ -523,10 +527,16 @@ package body lua is
 
   function at_panic
    (state          : state_t;
-    panic_function : user_func_t) return user_func_t
-  is
+    panic_function : user_func_t) return user_func_t is
   begin
     return cbinds.lua_atpanic (state, panic_function);
+  end at_panic;
+
+  procedure at_panic
+   (state          : state_t;
+    panic_function : user_func_t) is
+  begin
+    cbinds.lua_atpanic (state, panic_function);
   end at_panic;
 
   --

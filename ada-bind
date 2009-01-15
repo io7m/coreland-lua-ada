@@ -1,28 +1,50 @@
 #!/bin/sh
 
+fatal()
+{
+  echo "ada-bind: fatal: $1" 1>&2
+  exit 1
+}
+
 if [ $# -lt 1 ]
 then
-  echo "usage: source" 1>&2
+  echo "ada-bind: usage: [@dir] source" 1>&2
   exit 1
 fi
+
+#
+# check if new base dir was specified
+#
+
+BASE_DIR="."
+if [ $# -eq 2 ]
+then
+  BASE_DIR=`echo "$1" | sed 's/^@//g'`
+  shift
+fi
+
+#
+# Extract base name of given source file.
+#
+
+out=`echo "$1" | awk -F. '{print $1}'`
+src="$1"
+shift
 
 ADABIND=`head -n 1 conf-adabind`
 if [ $? -ne 0 ]
 then
-  echo "fatal: could not read conf-adabind" 1>&2
-  exit 1
+  fatal "could not read conf-adabind"
 fi
 SYSTYPE=`head -n 1 conf-systype`
 if [ $? -ne 0 ]
 then
-  echo "fatal: could not read conf-systype" 1>&2
-  exit 1
+  fatal "could not read conf-systype"
 fi
 ADATYPE=`head -n 1 conf-adatype`
 if [ $? -ne 0 ]
 then
-  echo "fatal: could not read conf-adatype" 1>&2
-  exit 1
+  fatal "could not read conf-adatype"
 fi
 
 ADAFLAGS="${ADAFLAGS} `head -n 1 conf-adabflags 2>/dev/null`"
@@ -35,18 +57,10 @@ if [ -f "conf-adafflist" ]
 then
   for f in `cat "conf-adafflist"`
   do
-    FLAGS=`cat $f 2>/dev/null`
+    FLAGS=`cat $f 2>/dev/null` || fatal "could not read $f"
     ADAFLAGS="${ADAFLAGS} ${FLAGS}"
   done
 fi
-
-#
-# Extract base name of given source file.
-#
-
-out=`echo "$1" | awk -F. '{print $1}'`
-src="$1"
-shift
 
 #
 # Read local flag file list, if present.
@@ -57,7 +71,7 @@ then
   for f in `cat "${out}.iff"`
   do
     targ="`dirname $out`/`dirname $f`/`basename $f`"
-    FLAGS="`cat $targ 2>/dev/null`"
+    FLAGS="`cat $targ 2>/dev/null`" || fatal "could not read $f"
     ADAFLAGS="${ADAFLAGS} ${FLAGS}"
   done
 fi

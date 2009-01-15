@@ -1,5 +1,12 @@
 #!/bin/sh
 
+fatal()
+{
+  echo "mk-adatype: fatal: $1" 1>&2
+  cleanup
+  exit 1
+}
+
 cleanup()
 {
   rm -f
@@ -15,11 +22,22 @@ try_v()
   return 1
 }
 
-SYS_ADA=`head -n 1 conf-adacomp`
+#
+# check if base directory was specified
+#
+
+BASE_DIR="."
+echo "$1" | grep '^@' 2>&1 >/dev/null
+if [ $? -eq 0 ]
+then
+  BASE_DIR=`echo $1 | sed 's/^@//g'`
+  shift
+fi
+
+SYS_ADA=`head -n 1 ${BASE_DIR}/conf-adacomp`
 if [ $? -ne 0 ]
 then
-  echo "fatal: could not read conf-adacomp" 1>&2
-  exit 1
+  fatal "could not read ${BASE_DIR}/conf-adacomp"
 fi
 
 # try V output
@@ -30,6 +48,4 @@ then
   exit 0
 fi
 
-echo "fatal: could not determine ada compiler type"
-cleanup
-exit 1
+fatal "could not determine ada compiler type"

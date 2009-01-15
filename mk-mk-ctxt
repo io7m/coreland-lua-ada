@@ -1,14 +1,41 @@
 #!/bin/sh
-# $Id$
 
-CC=`head -n 1 conf-cc`
-if [ $? -ne 0 ]
-then
-  echo "fatal: could not read conf-cc" 1>&2
+fatal()
+{
+  echo "mk-mk-ctxt: fatal: $1" 1>&2
   exit 1
+}
+
+cleanup()
+{
+  rm -f mk-ctxt.c mk-ctxt.o
+}
+
+#
+# check if base directory was specified
+#
+
+BASE_DIR="."
+echo "$1" | grep '^@' 2>&1 >/dev/null
+if [ $? -eq 0 ]
+then
+  BASE_DIR=`echo $1 | sed 's/^@//g'`
+  shift
 fi
 
-cat > mk-ctxt.c << EOF
+CC=`head -n 1 ${BASE_DIR}/conf-cc`
+if [ $? -ne 0 ]
+then
+  fatal "could not read ${BASE_DIR}/conf-cc"
+fi
+
+LD=`head -n 1 ${BASE_DIR}/conf-ld`
+if [ $? -ne 0 ]
+then
+  fatal "could not read ${BASE_DIR}/conf-ld"
+fi
+
+(cat << EOF
 #include <stdio.h>
 #include <unistd.h>
 
@@ -58,7 +85,8 @@ int main(int argc, char **argv)
   return 0;
 }
 EOF
+) > mk-ctxt.c || fatal "could not create mk-ctxt.c"
 
-${CC} -c -o mk-ctxt.o mk-ctxt.c
-${CC} -o mk-ctxt mk-ctxt.o
-rm -f mk-ctxt.c mk-ctxt.o
+${CC} -c -o mk-ctxt.o mk-ctxt.c || fatal "could not compile mk-ctxt.c"
+${LD} -o mk-ctxt mk-ctxt.o      || fatal "could not link mk-ctxt"
+cleanup
