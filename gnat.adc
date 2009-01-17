@@ -4,8 +4,8 @@ pragma source_file_name(lua.lib, spec_file_name => "lua-lib.ads");
 pragma source_file_name(lua.lib, body_file_name => "lua-lib.adb");
 
 -- ./lua-load_typed.apk
-pragma source_file_name(lua.load_buffer, spec_file_name => "lua-load_buffer.ads");
-pragma source_file_name(lua.load_buffer, body_file_name => "lua-load_buffer.adb");
+pragma source_file_name(lua.load_typed, spec_file_name => "lua-load_typed.ads");
+pragma source_file_name(lua.load_typed, body_file_name => "lua-load_typed.adb");
 
 -- ./lua-udata.apk
 pragma source_file_name(lua.udata, spec_file_name => "lua-udata.ads");
@@ -14,3 +14,11 @@ pragma source_file_name(lua.udata, body_file_name => "lua-udata.adb");
 -- ./lua.apk
 pragma source_file_name(lua, spec_file_name => "lua.ads");
 pragma source_file_name(lua, body_file_name => "lua.adb");
+
+-- UNIT_TESTS/raiser.apk
+pragma source_file_name(raiser, spec_file_name => "raiser.ads");
+pragma source_file_name(raiser, body_file_name => "raiser.adb");
+
+-- UNIT_TESTS/utest.apk
+pragma source_file_name(utest, spec_file_name => "utest.ads");
+pragma source_file_name(utest, body_file_name => "utest.adb");

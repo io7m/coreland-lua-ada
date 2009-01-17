@@ -3,6 +3,7 @@
 default: all
 
 all:\
+UNIT_TESTS/except1 UNIT_TESTS/except1.ali UNIT_TESTS/except1.o \
 UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
 UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o \
 UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o \
@@ -10,13 +11,14 @@ UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali UNIT_TESTS/loadfile1.o \
 UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o \
 UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
 UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
-UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali \
-UNIT_TESTS/utest.o ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o \
-ctxt/repos.o ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o \
-install-core.o install-error.o install-posix.o install-win32.o install.a \
-installer installer.o instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o \
-lua-ada.a lua-ext.o lua-lib.ali lua-lib.o lua-load_typed.ali lua-load_typed.o \
-lua-udata.ali lua-udata.o lua.ali lua.o
+UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/raiser.ali \
+UNIT_TESTS/raiser.o UNIT_TESTS/utest.ali UNIT_TESTS/utest.o ctxt/bindir.o \
+ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o \
+ctxt/version.o deinstaller deinstaller.o install-core.o install-error.o \
+install-posix.o install-win32.o install.a installer installer.o instchk \
+instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o \
+lua-lib.ali lua-lib.o lua-load_typed.ali lua-load_typed.o lua-udata.ali \
+lua-udata.o lua.ali lua.o
 
 # Mkf-deinstall
 deinstall: deinstaller conf-sosuffix
@@ -82,6 +84,20 @@ sysinfo_clean \
 # -- SYSDEPS end
 
 
+UNIT_TESTS/except1:\
+ada-bind ada-link UNIT_TESTS/except1.ald UNIT_TESTS/except1.ali \
+UNIT_TESTS/utest.ali UNIT_TESTS/raiser.ali lua.ali lua-lib.ali lua-ext.o
+	./ada-bind UNIT_TESTS/except1.ali
+	./ada-link UNIT_TESTS/except1 UNIT_TESTS/except1.ali lua-ext.o
+
+UNIT_TESTS/except1.ali:\
+ada-compile UNIT_TESTS/except1.adb lua.ali UNIT_TESTS/raiser.ali \
+UNIT_TESTS/utest.ali
+	./ada-compile UNIT_TESTS/except1.adb
+
+UNIT_TESTS/except1.o:\
+UNIT_TESTS/except1.ali
+
 UNIT_TESTS/execfile:\
 ada-bind ada-link UNIT_TESTS/execfile.ald UNIT_TESTS/execfile.ali \
 UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
@@ -89,7 +105,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/execfile UNIT_TESTS/execfile.ali lua-ext.o
 
 UNIT_TESTS/execfile.ali:\
-ada-compile UNIT_TESTS/execfile.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/execfile.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/execfile.adb
 
 UNIT_TESTS/execfile.o:\
@@ -102,7 +118,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/execstring UNIT_TESTS/execstring.ali lua-ext.o
 
 UNIT_TESTS/execstring.ali:\
-ada-compile UNIT_TESTS/execstring.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/execstring.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/execstring.adb
 
 UNIT_TESTS/execstring.o:\
@@ -115,7 +131,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali lua-ext.o
 
 UNIT_TESTS/loadbase.ali:\
-ada-compile UNIT_TESTS/loadbase.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/loadbase.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadbase.adb
 
 UNIT_TESTS/loadbase.o:\
@@ -128,7 +144,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali lua-ext.o
 
 UNIT_TESTS/loadfile1.ali:\
-ada-compile UNIT_TESTS/loadfile1.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/loadfile1.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadfile1.adb
 
 UNIT_TESTS/loadfile1.o:\
@@ -141,7 +157,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali lua-ext.o
 
 UNIT_TESTS/loadfile2.ali:\
-ada-compile UNIT_TESTS/loadfile2.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/loadfile2.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadfile2.adb
 
 UNIT_TESTS/loadfile2.o:\
@@ -154,7 +170,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali lua-ext.o
 
 UNIT_TESTS/loadstring1.ali:\
-ada-compile UNIT_TESTS/loadstring1.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/loadstring1.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadstring1.adb
 
 UNIT_TESTS/loadstring1.o:\
@@ -167,7 +183,7 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali lua-ext.o
 
 UNIT_TESTS/loadstring2.ali:\
-ada-compile UNIT_TESTS/loadstring2.adb lua.ads lua-lib.ads
+ada-compile UNIT_TESTS/loadstring2.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadstring2.adb
 
 UNIT_TESTS/loadstring2.o:\
@@ -180,14 +196,24 @@ lua.ali lua-lib.ali lua-ext.o
 	./ada-link UNIT_TESTS/open UNIT_TESTS/open.ali lua-ext.o
 
 UNIT_TESTS/open.ali:\
-ada-compile UNIT_TESTS/open.adb lua.ads
+ada-compile UNIT_TESTS/open.adb UNIT_TESTS/utest.ali lua.ali
 	./ada-compile UNIT_TESTS/open.adb
 
 UNIT_TESTS/open.o:\
 UNIT_TESTS/open.ali
 
+UNIT_TESTS/raiser.ads:\
+lua.ali
+
+UNIT_TESTS/raiser.ali:\
+ada-compile UNIT_TESTS/raiser.adb UNIT_TESTS/raiser.ads
+	./ada-compile UNIT_TESTS/raiser.adb
+
+UNIT_TESTS/raiser.o:\
+UNIT_TESTS/raiser.ali
+
 UNIT_TESTS/utest.ali:\
-ada-compile UNIT_TESTS/utest.adb
+ada-compile UNIT_TESTS/utest.adb UNIT_TESTS/utest.ads
 	./ada-compile UNIT_TESTS/utest.adb
 
 UNIT_TESTS/utest.o:\
@@ -223,11 +249,11 @@ mk-adatype
 	./mk-adatype > conf-adatype.tmp && mv conf-adatype.tmp conf-adatype
 
 conf-cctype:\
-conf-cc mk-cctype
+conf-cc conf-cc mk-cctype
 	./mk-cctype > conf-cctype.tmp && mv conf-cctype.tmp conf-cctype
 
 conf-ldtype:\
-conf-ld mk-ldtype
+conf-ld conf-ld mk-ldtype
 	./mk-ldtype > conf-ldtype.tmp && mv conf-ldtype.tmp conf-ldtype
 
 conf-sosuffix:\
@@ -368,27 +394,27 @@ cc-compile lua-ext.c
 	./cc-compile lua-ext.c
 
 lua-lib.ads:\
-lua.ads
+lua.ali
 
 lua-lib.ali:\
-ada-compile lua-lib.adb lua-lib.ads
+ada-compile lua-lib.adb lua.ali lua-lib.ads
 	./ada-compile lua-lib.adb
 
 lua-lib.o:\
 lua-lib.ali
 
 lua-load_typed.ali:\
-ada-compile lua-load_typed.adb
+ada-compile lua-load_typed.adb lua-load_typed.ads
 	./ada-compile lua-load_typed.adb
 
 lua-load_typed.o:\
 lua-load_typed.ali
 
 lua-udata.ads:\
-lua.ads lua-lib.ads
+lua.ali lua-lib.ali
 
 lua-udata.ali:\
-ada-compile lua-udata.adb lua-udata.ads
+ada-compile lua-udata.adb lua.ali lua-udata.ads
 	./ada-compile lua-udata.adb
 
 lua-udata.o:\
@@ -426,21 +452,23 @@ conf-cc conf-ld
 clean-all: sysdeps_clean tests_clean obj_clean ext_clean
 clean: obj_clean
 obj_clean:
-	rm -f UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
+	rm -f UNIT_TESTS/except1 UNIT_TESTS/except1.ali UNIT_TESTS/except1.o \
+	UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
 	UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o \
 	UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o \
 	UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali UNIT_TESTS/loadfile1.o \
 	UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali UNIT_TESTS/loadfile2.o \
 	UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
 	UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
-	UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/utest.ali \
-	UNIT_TESTS/utest.o ctxt/bindir.c ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c \
-	ctxt/dlibdir.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
-	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o deinstaller \
-	deinstaller.o install-core.o install-error.o install-posix.o install-win32.o \
-	install.a installer installer.o instchk instchk.o insthier.o lua-ada-conf \
-	lua-ada-conf.o lua-ada.a lua-ext.o lua-lib.ali lua-lib.o lua-load_typed.ali \
-	lua-load_typed.o lua-udata.ali lua-udata.o lua.ali lua.o
+	UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/raiser.ali \
+	UNIT_TESTS/raiser.o UNIT_TESTS/utest.ali UNIT_TESTS/utest.o ctxt/bindir.c \
+	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/incdir.c \
+	ctxt/incdir.o ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o \
+	ctxt/version.c ctxt/version.o deinstaller deinstaller.o install-core.o \
+	install-error.o install-posix.o install-win32.o install.a installer installer.o \
+	instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o
+	rm -f lua-lib.ali lua-lib.o lua-load_typed.ali lua-load_typed.o lua-udata.ali \
+	lua-udata.o lua.ali lua.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 

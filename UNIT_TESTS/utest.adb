@@ -14,26 +14,33 @@ package body utest is
 
   test_num: natural;
 
-  procedure fail (exit_code: integer; msg: string) is
-    nstr: constant string := sf.trim (natural'image (test_num), s.left);
+  procedure fail
+    (exit_code : in integer;
+     message   : in string)
+  is
+    nstr : constant string := sf.trim (natural'image (test_num), s.left);
   begin
-    io.put_line ("[" & nstr & "] fail: " & msg);
+    io.put_line ("[" & nstr & "] fail: " & message);
     sys_exit (ic.int (exit_code));
   end fail;
 
-  procedure pass (msg: string) is
-    nstr: constant string := sf.trim (natural'image (test_num), s.left);
+  procedure pass
+    (message : in string)
+  is
+    nstr : constant string := sf.trim (natural'image (test_num), s.left);
   begin
     test_num := test_num + 1;
-    io.put_line ("[" & nstr & "] pass: " & msg);
+    io.put_line ("[" & nstr & "] pass: " & message);
   end pass;
 
-  procedure check (cond: boolean; msg: string := "test failed") is
+  procedure check
+    (check   : in boolean;
+     message : in string := "test failed") is
   begin
-    if cond then
-      pass (msg);
+    if check then
+      pass (message);
     else
-      fail (1, msg);
+      fail (1, message);
     end if;
   end check;
 
