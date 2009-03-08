@@ -10,7 +10,7 @@ enum {
   INST_COPY_EXEC  = 1,
   INST_SYMLINK    = 2,
   INST_MKDIR      = 3,
-  INST_LIBLINK    = 4,
+  INST_LIBLINK    = 4
 };
 
 struct install_status_t {
@@ -34,7 +34,7 @@ struct install_item {
   int perm;
 };
 
-struct install_status_t install_init (void);
+struct install_status_t install_init (const char *);
 struct install_status_t install (struct install_item *, unsigned int);
 struct install_status_t install_check (struct install_item *);
 struct install_status_t deinstall (struct install_item *, unsigned int);
