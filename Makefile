@@ -16,8 +16,10 @@ UNIT_TESTS/raiser.o UNIT_TESTS/utest.ali UNIT_TESTS/utest.o ctxt/bindir.o \
 ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o \
 ctxt/version.o deinstaller deinstaller.o install-core.o install-error.o \
 install-posix.o install-win32.o install.a installer installer.o instchk \
-instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o \
-lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o
+instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-check-exception \
+lua-check_raise.ali lua-check_raise.o lua-config.ali lua-config.o lua-ext.o \
+lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o \
+lua_check_exception.ali lua_check_exception.o
 
 # Mkf-deinstall
 deinstall: deinstaller conf-sosuffix
@@ -85,12 +87,13 @@ sysinfo_clean \
 
 UNIT_TESTS/except1:\
 ada-bind ada-link UNIT_TESTS/except1.ald UNIT_TESTS/except1.ali \
-UNIT_TESTS/utest.ali UNIT_TESTS/raiser.ali lua.ali lua-lib.ali lua-ext.o
+UNIT_TESTS/utest.ali UNIT_TESTS/raiser.ali lua.ali lua-lib.ali lua-config.ali \
+lua-ext.o
 	./ada-bind UNIT_TESTS/except1.ali
 	./ada-link UNIT_TESTS/except1 UNIT_TESTS/except1.ali lua-ext.o
 
 UNIT_TESTS/except1.ali:\
-ada-compile UNIT_TESTS/except1.adb lua.ali UNIT_TESTS/raiser.ali \
+ada-compile UNIT_TESTS/except1.adb lua.ali lua-config.ali UNIT_TESTS/raiser.ali \
 UNIT_TESTS/utest.ali
 	./ada-compile UNIT_TESTS/except1.adb
 
@@ -385,8 +388,34 @@ cc-compile lua-ada-conf.c ctxt.h _sysinfo.h
 	./cc-compile lua-ada-conf.c
 
 lua-ada.a:\
-cc-slib lua-ada.sld lua-ext.o lua-lib.o lua-user_data.o lua.o
-	./cc-slib lua-ada lua-ext.o lua-lib.o lua-user_data.o lua.o
+cc-slib lua-ada.sld lua-check_raise.o lua-config.o lua-ext.o lua-lib.o \
+lua-user_data.o lua.o
+	./cc-slib lua-ada lua-check_raise.o lua-config.o lua-ext.o lua-lib.o \
+	lua-user_data.o lua.o
+
+lua-check-exception:\
+ada-bind ada-link lua-check-exception.ald lua_check_exception.ali \
+lua-check_raise.ali lua-ext.o
+	./ada-bind lua_check_exception.ali
+	./ada-link lua-check-exception lua_check_exception.ali lua-ext.o
+
+lua-check_raise.ali:\
+ada-compile lua-check_raise.adb lua-check_raise.ads
+	./ada-compile lua-check_raise.adb
+
+lua-check_raise.o:\
+lua-check_raise.ali
+
+# lua-config.ads.mff
+lua-config.ads: lua-config.sh lua-check-exception
+	./lua-config.sh > lua-config.ads.tmp && mv lua-config.ads.tmp lua-config.ads
+
+lua-config.ali:\
+ada-compile lua-config.ads
+	./ada-compile lua-config.ads
+
+lua-config.o:\
+lua-config.ali
 
 lua-ext.o:\
 cc-compile lua-ext.c
@@ -418,6 +447,13 @@ ada-compile lua.adb lua.ads
 
 lua.o:\
 lua.ali
+
+lua_check_exception.ali:\
+ada-compile lua_check_exception.adb lua.ali lua-check_raise.ali
+	./ada-compile lua_check_exception.adb
+
+lua_check_exception.o:\
+lua_check_exception.ali
 
 mk-adatype:\
 conf-adacomp conf-systype
@@ -458,8 +494,11 @@ obj_clean:
 	ctxt/incdir.o ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o \
 	ctxt/version.c ctxt/version.o deinstaller deinstaller.o install-core.o \
 	install-error.o install-posix.o install-win32.o install.a installer installer.o \
-	instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o
-	rm -f lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o
+	instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a \
+	lua-check-exception
+	rm -f lua-check_raise.ali lua-check_raise.o lua-config.ads lua-config.ali \
+	lua-config.o lua-ext.o lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o \
+	lua.ali lua.o lua_check_exception.ali lua_check_exception.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 

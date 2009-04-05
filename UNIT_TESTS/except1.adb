@@ -1,5 +1,6 @@
 with Ada.Text_IO;
 with Lua;
+with Lua.Config;
 with Raiser;
 with UTest;
 
@@ -12,24 +13,27 @@ procedure except1 is
   use type Lua.State_t;
   use type Lua.Number_t;
 begin
-  State := Lua.Open;
 
-  Lua.At_Panic
-    (State          => State,
-     Panic_Function => Raiser.Raiser'Access);
-  Ada.Text_IO.Put_Line ("registered panic handler");
+  if Lua.Config.Can_Propagate_Exceptions then
+    State := Lua.Open;
 
-  begin
-    Ada.Text_IO.Put_Line ("causing panic...");
-    Lua.Push_Number (State, -1.0);
-    Lua.Call (State, 1, 1);
-  exception
-    when Raiser.Raiser_Error =>
-      Ada.Text_IO.Put_Line ("Caught Raiser.Raiser_Error");
-      Caught := True;
-  end;
+    Lua.At_Panic
+      (State          => State,
+       Panic_Function => Raiser.Raiser'Access);
+    Ada.Text_IO.Put_Line ("registered panic handler");
 
-  UTest.Check
-    (Check   => Caught,
-     Message => "Caught exception");
+    begin
+      Ada.Text_IO.Put_Line ("causing panic...");
+      Lua.Push_Number (State, -1.0);
+      Lua.Call (State, 1, 1);
+    exception
+      when Raiser.Raiser_Error =>
+        Ada.Text_IO.Put_Line ("Caught Raiser.Raiser_Error");
+        Caught := True;
+    end;
+
+    UTest.Check
+      (Check   => Caught,
+       Message => "Caught exception");
+  end if;
 end except1;

@@ -1,7 +1,10 @@
 
--- ./lua.apk
-pragma source_file_name(lua, spec_file_name => "lua.ads");
-pragma source_file_name(lua, body_file_name => "lua.adb");
+-- ./lua-check_raise.apk
+pragma source_file_name(Lua.Check_Raise, spec_file_name => "lua-check_raise.ads");
+pragma source_file_name(Lua.Check_Raise, body_file_name => "lua-check_raise.adb");
+
+-- ./lua-config.apk
+pragma source_file_name(Lua.Config, spec_file_name => "lua-config.ads");
 
 -- ./lua-lib.apk
 pragma source_file_name(lua.lib, spec_file_name => "lua-lib.ads");
@@ -10,6 +13,10 @@ pragma source_file_name(lua.lib, body_file_name => "lua-lib.adb");
 -- ./lua-user_data.apk
 pragma source_file_name(lua.user_data, spec_file_name => "lua-user_data.ads");
 pragma source_file_name(lua.user_data, body_file_name => "lua-user_data.adb");
+
+-- ./lua.apk
+pragma source_file_name(lua, spec_file_name => "lua.ads");
+pragma source_file_name(lua, body_file_name => "lua.adb");
 
 -- UNIT_TESTS/raiser.apk
 pragma source_file_name(raiser, spec_file_name => "raiser.ads");

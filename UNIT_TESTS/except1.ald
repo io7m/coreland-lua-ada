@@ -3,4 +3,5 @@ utest.ali
 raiser.ali
 ../lua.ali
 ../lua-lib.ali
+../lua-config.ali
 ../lua-ext.o

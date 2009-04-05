@@ -9,3 +9,5 @@
                procedure.
 20090405 code: lua.udata -> Lua.User_Data
 20090405 note: version number changed to track Lua distribution.
+20090405 code: detect ability of lua library to propagate exceptions at
+               compile time. Lua.Config.

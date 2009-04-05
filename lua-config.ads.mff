@@ -1,0 +1,2 @@
+lua-config.ads: lua-config.sh lua-check-exception
+	./lua-config.sh > lua-config.ads.tmp && mv lua-config.ads.tmp lua-config.ads
