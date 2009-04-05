@@ -137,10 +137,20 @@ then
     fi
   fi
 
+  #
+  # create output file
+  #
+
   ofile="`${SYSDEP_LINE} 1 < creates`"
-  os_lower=`os_tolower`
+  touch ${ofile}
+
   defines="`cat defines 2>/dev/null`"
 
+  #
+  # read OS specific definitions
+  #
+
+  os_lower=`os_tolower`
   if [ -f "os_ext/$os_lower/defines" ]
   then
     defines="`cat "os_ext/$os_lower/defines" 2>/dev/null`"
@@ -188,7 +198,7 @@ then
     if [ ! -z "${flags}" ]
     then
       def=`flatten_defines "${defines}"`
-      str="${flags} ${xflags}"
+      str="${flags} ${def} ${xflags}"
       echo "${str}" >> "${ofile}"
       echo "${SYSDEP_MODULE}: ${str}" >> "sysdeps.out"
       files_move
@@ -285,6 +295,7 @@ then
   fi
 
   ${SYSDEP_ERROR} "manual search failed"
+  files_move
 else
   rm -f ${SYSDEP_DIR_RELATIVE}/sd-cpuidx86 \
         ${SYSDEP_DIR_RELATIVE}/sd-cpuidx86.o

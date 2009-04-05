@@ -1,0 +1,3 @@
+freebsd 6.4-release-p1 gcc 4.3.2 x86 gnat_fsf 4.3.2
+linux 2.6.26-1-686 gcc 4.3.3 x86 gnat_fsf 4.3.3
+linux 2.6.26-1-amd64 gcc 4.3.2 x86_64 gnat_fsf 4.3.2
