@@ -1,18 +1,12 @@
 #!/bin/sh
 
-cleanup()
-{
-
-}
-
 fatal()
 {
   echo "fatal: $1" 1>&2
-  cleanup
   exit 1
 }
 
-ret_text=`./lua-check-exception`
+ret_text=`./lua-check-exception 2>&1`
 ret_code=$?
 if [ $ret_code -eq 0 ]
 then
@@ -29,5 +23,4 @@ package Lua.Config is
 end Lua.Config;
 EOF
 
-cleanup
 exit 0
