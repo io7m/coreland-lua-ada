@@ -1,0 +1,7 @@
+Define:
+
+  Lua.Can_Propagate_Exceptions : constant Boolean := True;
+
+  Create above constant with compile-time check. Can exceptions
+  be propagated through C library?
+

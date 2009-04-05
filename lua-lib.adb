@@ -1,67 +1,70 @@
 -- Lua standard libraries
 
-package body lua.lib is
+package body Lua.Lib is
 
-  function new_metatable
-   (state : lua.state_t;
-    name  : string) return boolean is
+  function New_Metatable
+    (State : Lua.State_t;
+     Name  : String) return Boolean is
   begin
-    lua.push_string (state, name);
-    lua.raw_get (state, lua.registry_index);
-    if lua.is_nil (state, -1) = false then return false; end if;
-    lua.pop (state, 1);
-    lua.new_table (state);
+    Lua.Push_String (State, Name);
+    Lua.Raw_Get (State, Lua.Registry_Index);
+    if Lua.Is_Nil (State, -1) = False then
+      return False;
+    end if;
+    Lua.Pop (State, 1);
+    Lua.New_Table (State);
     -- 1 metatable
-    lua.push_string (state, name);
+    Lua.Push_String (State, Name);
     -- 1 metatable
-    -- 2 name
-    lua.push_value (state, -2);
+    -- 2 Name
+    Lua.Push_Value (State, -2);
     -- 1 metatable
-    -- 2 name
+    -- 2 Name
     -- 3 metatable
-    lua.raw_set (state, lua.registry_index);
+    Lua.Raw_Set (State, Lua.Registry_Index);
     -- 1 metatable
-    lua.push_value (state, -1);
-    -- 1 metatable
-    -- 2 metatable
-    lua.push_string (state, name);
+    Lua.Push_Value (State, -1);
     -- 1 metatable
     -- 2 metatable
-    -- 3 name
-    lua.raw_set (state, lua.registry_index);
+    Lua.Push_String (State, Name);
     -- 1 metatable
-    return true;
-  end new_metatable;
+    -- 2 metatable
+    -- 3 Name
+    Lua.Raw_Set (State, Lua.Registry_Index);
+    -- 1 metatable
+    return True;
+  end New_Metatable;
 
-  procedure open_library
-   (state  : lua.state_t;
-    name   : string;
-    funcs  : register_array_t;
-    num_up : integer) is
+  procedure Open_Library
+   (State     : Lua.State_t;
+    Name      : String;
+    Functions : Register_Array_t;
+    num_up    : Integer)
+  is
   begin
-    if name /= "" then
-      lua.push_string (state, name);
-      lua.get_table (state, lua.globals_index);
-      if lua.is_nil (state, -1) then
-        lua.pop (state, 1);
-        lua.new_table (state);
-        lua.push_string (state, name);
-        lua.push_value (state, -2);
-        lua.set_table (state, lua.globals_index);
+    if Name /= "" then
+      Lua.Push_String (State, Name);
+      Lua.Get_Table (State, Lua.Globals_Index);
+      if Lua.Is_Nil (State, -1) then
+        Lua.Pop (State, 1);
+        Lua.New_Table (State);
+        Lua.Push_String (State, Name);
+        Lua.Push_Value (State, -2);
+        Lua.Set_Table (State, Lua.Globals_Index);
       end if;
-      lua.insert (state, - (num_up + 1));
+      Lua.Insert (State, -(num_up + 1));
     end if;
 
-    for i in funcs'first .. funcs'last loop
-      lua.push_string (state, funcs (i).name);
+    for Index in Functions'First .. Functions'Last loop
+      Lua.Push_String (State, Functions (Index).Name);
       for j in 1 .. num_up loop
-        lua.push_value (state, - (num_up + 1));
+        Lua.Push_Value (State, -(num_up + 1));
       end loop;
-      lua.push_user_closure (state, funcs (i).func, num_up);
-      lua.set_table (state, - (num_up + 3));
+      Lua.Push_User_Closure (State, Functions (Index).Func, num_up);
+      Lua.Set_Table (State, -(num_up + 3));
     end loop;
 
-    lua.pop (state, num_up);
-  end open_library;
+    Lua.Pop (State, num_up);
+  end Open_Library;
 
-end lua.lib;
+end Lua.Lib;

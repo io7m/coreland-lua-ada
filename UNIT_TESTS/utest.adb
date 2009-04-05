@@ -1,47 +1,45 @@
-with ada.text_io;
-with ada.strings.fixed;
-with ada.strings;
-with interfaces.c;
+with Ada.Text_IO;
+with Ada.Strings.Fixed;
+with Ada.Strings;
+with Interfaces.C;
 
-package body utest is
-  package io renames ada.text_io;
-  package ic renames interfaces.c;
-  package sf renames ada.strings.fixed;
-  package s renames ada.strings;
+package body UTest is
+  package IO renames Ada.Text_IO;
+  package IC renames Interfaces.C;
+  package Fixed_Strings renames Ada.Strings.Fixed;
+  package Strings renames Ada.Strings;
 
-  procedure sys_exit (ecode: ic.int);
-  pragma import (c, sys_exit, "_exit");
+  procedure Sys_Exit (ecode : IC.int);
+  pragma Import (C, Sys_Exit, "_exit");
 
-  test_num: natural;
+  Test_Number : Natural;
 
-  procedure fail
-    (exit_code : in integer;
-     message   : in string)
+  procedure Fail
+    (Exit_Code : in Integer;
+     Message   : in String)
   is
-    nstr : constant string := sf.trim (natural'image (test_num), s.left);
+    Num_String : constant String := Fixed_Strings.Trim (Natural'Image (Test_Number), Strings.Left);
   begin
-    io.put_line ("[" & nstr & "] fail: " & message);
-    sys_exit (ic.int (exit_code));
-  end fail;
+    IO.Put_Line ("[" & Num_String & "] Fail: " & Message);
+    Sys_Exit (IC.int (Exit_Code));
+  end Fail;
 
-  procedure pass
-    (message : in string)
-  is
-    nstr : constant string := sf.trim (natural'image (test_num), s.left);
+  procedure Pass (Message : in String) is
+    Num_String : constant String := Fixed_Strings.Trim (Natural'Image (Test_Number), Strings.Left);
   begin
-    test_num := test_num + 1;
-    io.put_line ("[" & nstr & "] pass: " & message);
-  end pass;
+    Test_Number := Test_Number + 1;
+    IO.Put_Line ("[" & Num_String & "] Pass: " & Message);
+  end Pass;
 
-  procedure check
-    (check   : in boolean;
-     message : in string := "test failed") is
+  procedure Check
+    (Check   : in Boolean;
+     Message : in String := "test failed") is
   begin
-    if check then
-      pass (message);
+    if Check then
+      Pass (Message);
     else
-      fail (1, message);
+      Fail (1, Message);
     end if;
-  end check;
+  end Check;
 
-end utest;
+end UTest;

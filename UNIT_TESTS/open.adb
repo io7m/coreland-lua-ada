@@ -1,20 +1,21 @@
-with utest;
-with lua;
+with UTest;
+with Lua;
 
 -- the majority of strange code here is to stop very strict compilers from
 -- complaining about unread or unreferenced variables.
 procedure open is
-  use type lua.state_t;
+  use type Lua.State_t;
 
-  ls: lua.state_t;
-  lsdummy: lua.state_t;
+  State       : Lua.State_t;
+  State_Dummy : Lua.State_t;
 begin
-  ls := lua.open;
-  lsdummy := ls;
-  ls := lsdummy;
-  if ls /= lsdummy then
-    raise program_error with "assignment error";
+  State       := Lua.Open;
+  State_Dummy := State;
+  State       := State_Dummy;
+  if State /= State_Dummy then
+    raise Program_Error with "assignment error";
   end if;
 exception
-  when others => utest.fail (2, "unexpected exception");
+  when others =>
+    UTest.Fail (2, "unexpected exception");
 end open;
