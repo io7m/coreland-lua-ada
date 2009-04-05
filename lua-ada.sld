@@ -1,5 +1,4 @@
 lua-ext.o
 lua-lib.o
-lua-load_typed.o
-lua-udata.o
+lua-user_data.o
 lua.o

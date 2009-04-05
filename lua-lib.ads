@@ -1,45 +1,45 @@
 -- Lua standard libraries
 
-with lua;
+with Lua;
 
-package lua.lib is
+package Lua.Lib is
 
-  type register_t is record
-    name : su.unbounded_string;
-    func : lua.user_func_t;
+  type Register_t is record
+    Name : UB_Strings.Unbounded_String;
+    Func : Lua.User_Function_t;
   end record;
-  type register_access_t is access all register_t;
-  type register_array_t is array (positive range <>) of register_t;
+  type Register_Access_t is access all Register_t;
+  type Register_Array_t is array (Positive range <>) of Register_t;
 
-  function new_metatable
-   (state : lua.state_t;
-    name  : string) return boolean;
+  function New_Metatable
+   (State : Lua.State_t;
+    Name  : String) return Boolean;
 
-  procedure open_library
-   (state  : lua.state_t;
-    name   : string;
-    funcs  : register_array_t; 
-    num_up : integer);
+  procedure Open_Library
+   (State     : Lua.State_t;
+    Name      : String;
+    Functions : Register_Array_t;
+    num_up    : Integer);
 
-  procedure open_base (state : lua.state_t);
-  pragma import (c, open_base, "luaopen_base");
+  procedure Open_Base (State : Lua.State_t);
+  pragma Import (C, Open_Base, "luaopen_base");
 
-  procedure open_table (state : lua.state_t);
-  pragma import (c, open_table, "luaopen_table");
+  procedure Open_Table (State : Lua.State_t);
+  pragma Import (C, Open_Table, "luaopen_table");
 
-  procedure open_string (state : lua.state_t);
-  pragma import (c, open_string, "luaopen_string");
+  procedure Open_String (State : Lua.State_t);
+  pragma Import (C, Open_String, "luaopen_string");
 
-  procedure open_io (state : lua.state_t);
-  pragma import (c, open_io, "luaopen_io");
+  procedure Open_IO (State : Lua.State_t);
+  pragma Import (C, Open_IO, "luaopen_io");
 
-  procedure open_math (state : lua.state_t);
-  pragma import (c, open_math, "luaopen_math");
+  procedure Open_Math (State : Lua.State_t);
+  pragma Import (C, Open_Math, "luaopen_math");
 
-  procedure open_debug (state : lua.state_t);
-  pragma import (c, open_debug, "luaopen_debug");
+  procedure Open_Debug (State : Lua.State_t);
+  pragma Import (C, Open_Debug, "luaopen_debug");
 
-  procedure open_libs (state : lua.state_t);
-  pragma import (c, open_libs, "luaL_openlibs");
+  procedure Open_Libs (State : Lua.State_t);
+  pragma Import (C, Open_Libs, "luaL_openlibs");
 
-end lua.lib;
+end Lua.Lib;

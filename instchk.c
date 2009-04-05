@@ -24,7 +24,7 @@ main (void)
   unsigned long i;
   struct install_status_t status;
 
-  status = install_init ("conf-sosuffix");
+  status = install_init ();
   if (status.status != INSTALL_STATUS_OK) {
     printf ("%s: fatal: init: %s - %s\n", progname,
       status.message, install_error (errno));

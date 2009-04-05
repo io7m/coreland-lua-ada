@@ -1,12 +1,13 @@
-with utest;
-with lua;
-with lua.lib;
+with UTest;
+with Lua;
+with Lua.Lib;
 
 procedure loadbase is
-  ls: lua.state_t;
+  State : Lua.State_t;
 begin
-  ls := lua.open;
-  lua.lib.open_base (ls);
+  State := Lua.Open;
+  Lua.Lib.Open_Base (State);
 exception
-  when others => utest.fail (2, "unexpected exception");
+  when others =>
+    UTest.Fail (2, "unexpected exception");
 end loadbase;

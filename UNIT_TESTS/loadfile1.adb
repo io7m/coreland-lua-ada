@@ -1,21 +1,22 @@
-with utest;
-with lua;
-with lua.lib;
+with UTest;
+with Lua;
+with Lua.Lib;
 
 procedure loadfile1 is
-  use type lua.error_t;
+  use type Lua.Error_t;
 
-  ls: lua.state_t;
-  ec: lua.error_t;
+  State      : Lua.State_t;
+  Error_Code : Lua.Error_t;
 begin
-  ls := lua.open;
-  lua.lib.open_base (ls);
+  State := Lua.Open;
+  Lua.Lib.Open_Base (State);
 
-  ec := lua.load_file (ls, "test.lua");
-  if ec /= lua.lua_error_none then
-    utest.fail (1, lua.to_string (ls, -1));
+  Error_Code := Lua.Load_File (State, "test.lua");
+  if Error_Code /= Lua.Lua_Error_None then
+    UTest.Fail (1, Lua.To_String (State, -1));
   end if;
 
 exception
-  when others => utest.fail (2, "unexpected exception");
+  when others =>
+    UTest.Fail (2, "unexpected exception");
 end loadfile1;

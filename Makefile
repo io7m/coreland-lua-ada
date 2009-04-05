@@ -17,8 +17,7 @@ ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o \
 ctxt/version.o deinstaller deinstaller.o install-core.o install-error.o \
 install-posix.o install-win32.o install.a installer installer.o instchk \
 instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o \
-lua-lib.ali lua-lib.o lua-load_typed.ali lua-load_typed.o lua-udata.ali \
-lua-udata.o lua.ali lua.o
+lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o
 
 # Mkf-deinstall
 deinstall: deinstaller conf-sosuffix
@@ -386,8 +385,8 @@ cc-compile lua-ada-conf.c ctxt.h _sysinfo.h
 	./cc-compile lua-ada-conf.c
 
 lua-ada.a:\
-cc-slib lua-ada.sld lua-ext.o lua-lib.o lua-load_typed.o lua-udata.o lua.o
-	./cc-slib lua-ada lua-ext.o lua-lib.o lua-load_typed.o lua-udata.o lua.o
+cc-slib lua-ada.sld lua-ext.o lua-lib.o lua-user_data.o lua.o
+	./cc-slib lua-ada lua-ext.o lua-lib.o lua-user_data.o lua.o
 
 lua-ext.o:\
 cc-compile lua-ext.c
@@ -403,22 +402,15 @@ ada-compile lua-lib.adb lua.ali lua-lib.ads
 lua-lib.o:\
 lua-lib.ali
 
-lua-load_typed.ali:\
-ada-compile lua-load_typed.adb lua-load_typed.ads
-	./ada-compile lua-load_typed.adb
-
-lua-load_typed.o:\
-lua-load_typed.ali
-
-lua-udata.ads:\
+lua-user_data.ads:\
 lua.ali lua-lib.ali
 
-lua-udata.ali:\
-ada-compile lua-udata.adb lua.ali lua-udata.ads
-	./ada-compile lua-udata.adb
+lua-user_data.ali:\
+ada-compile lua-user_data.adb lua-user_data.ads
+	./ada-compile lua-user_data.adb
 
-lua-udata.o:\
-lua-udata.ali
+lua-user_data.o:\
+lua-user_data.ali
 
 lua.ali:\
 ada-compile lua.adb lua.ads
@@ -467,8 +459,7 @@ obj_clean:
 	ctxt/version.c ctxt/version.o deinstaller deinstaller.o install-core.o \
 	install-error.o install-posix.o install-win32.o install.a installer installer.o \
 	instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-ext.o
-	rm -f lua-lib.ali lua-lib.o lua-load_typed.ali lua-load_typed.o lua-udata.ali \
-	lua-udata.o lua.ali lua.o
+	rm -f lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 

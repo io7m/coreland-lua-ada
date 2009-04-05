@@ -1,13 +1,16 @@
-with ada.text_io;
+with Ada.Text_IO;
 
-package body raiser is
+package body Raiser is
 
-  function raiser
-    (state : lua.state_t) return lua.int_t is
+  function Raiser
+    (State : Lua.State_t) return Lua.Integer_t
+  is
+    use type Lua.State_t;
   begin
-    ada.text_io.put_line ("inside raiser.raiser...");
-    raise raiser_error;
+    pragma Assert (State /= Lua.State_Error);
+    Ada.Text_IO.Put_Line ("inside Raiser.Raiser...");
+    raise Raiser_Error;
     return 0;
-  end raiser;
+  end Raiser;
 
-end raiser;
+end Raiser;

@@ -1,9 +1,11 @@
-package utest is
-  procedure fail
-    (exit_code : in integer;
-     message   : in string);
+package UTest is
 
-  procedure check
-    (check   : in boolean;
-     message : in string := "test failed");
-end utest;
+  procedure Fail
+    (Exit_Code : in Integer;
+     Message   : in String);
+
+  procedure Check
+    (Check   : in Boolean;
+     Message : in String := "test failed");
+
+end UTest;

@@ -1,11 +1,11 @@
-with lua;
+with Lua;
 
-package raiser is
+package Raiser is
 
-  function raiser
-    (state : lua.state_t) return lua.int_t;
-  pragma convention (c, raiser);
+  function Raiser
+    (State : Lua.State_t) return Lua.Integer_t;
+  pragma Convention (C, Raiser);
 
-  raiser_error : exception;
+  Raiser_Error : exception;
 
-end raiser;
+end Raiser;

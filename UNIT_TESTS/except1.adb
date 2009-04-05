@@ -1,35 +1,35 @@
-with ada.text_io;
-with lua;
-with raiser;
-with utest;
+with Ada.Text_IO;
+with Lua;
+with Raiser;
+with UTest;
 
--- ensure exceptions can be passed through liblua
+-- ensure exceptions can be passed through libLua
 
 procedure except1 is
-  ls     : lua.state_t;
-  caught : boolean := false;
+  State  : Lua.State_t;
+  Caught : Boolean := False;
 
-  use type lua.state_t;
-  use type lua.number_t;
+  use type Lua.State_t;
+  use type Lua.Number_t;
 begin
-  ls := lua.open;
+  State := Lua.Open;
 
-  lua.at_panic
-    (state          => ls,
-     panic_function => raiser.raiser'access);
-  ada.text_io.put_line ("registered panic handler");
+  Lua.At_Panic
+    (State          => State,
+     Panic_Function => Raiser.Raiser'Access);
+  Ada.Text_IO.Put_Line ("registered panic handler");
 
   begin
-    ada.text_io.put_line ("causing panic...");
-    lua.push_number (ls, -1.0);
-    lua.call (ls, 1, 1);
+    Ada.Text_IO.Put_Line ("causing panic...");
+    Lua.Push_Number (State, -1.0);
+    Lua.Call (State, 1, 1);
   exception
-    when raiser.raiser_error =>
-      ada.text_io.put_line ("caught raiser.raiser_error");
-      caught := true;
+    when Raiser.Raiser_Error =>
+      Ada.Text_IO.Put_Line ("Caught Raiser.Raiser_Error");
+      Caught := True;
   end;
 
-  utest.check
-    (check   => caught,
-     message => "caught exception");
+  UTest.Check
+    (Check   => Caught,
+     Message => "Caught exception");
 end except1;

@@ -4,3 +4,8 @@
 20081207 code: another API cleanup in progress.
 20081207 code: added lua.load_typed for better interfacing with other libs.
 20090117 code: added except1 test to ensure exception handling works.
+20090405 code: large casing/style updates.
+20090405 code: removed lua-load_typed, replaced with Lua.Load_Typed generic
+               procedure.
+20090405 code: lua.udata -> Lua.User_Data
+20090405 note: version number changed to track Lua distribution.

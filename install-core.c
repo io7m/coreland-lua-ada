@@ -309,7 +309,6 @@ install_file_copy (const char *src, const char *dst,
 {
   static char dst_tmp [INSTALL_MAX_PATHLEN];
   static char copy_buf [65536];
-  char *copy_ptr;
   FILE *fd_src;
   FILE *fd_dst;
   size_t r;
@@ -343,18 +342,16 @@ install_file_copy (const char *src, const char *dst,
         goto ERR;
       }
     }
-    copy_ptr = copy_buf;
     while (r) {
-      w = fwrite (copy_ptr, 1, r, fd_dst);
+      w = fwrite (copy_buf, 1, r, fd_dst);
       if (w == 0) {
-        if (feof (fd_dst)) break;
-        if (ferror (fd_dst)) {
+        if (feof (fd_src)) break;
+        if (ferror (fd_src)) {
           status.message = "write error";
           goto ERR;
         }
       }
       r -= w;
-      copy_ptr += w;
     }
   }
 
@@ -750,11 +747,9 @@ inst_copy (struct install_item *ins, unsigned int flags)
   static char gid_str [INSTALL_FMT_GID];
   user_id_t uid;
   group_id_t gid;
-  permissions_t perm;
+  permissions_t perm = { ins->perm };
   unsigned long size = 0;
   struct install_status_t status = INSTALL_STATUS_INIT;
-
-  perm.value = ins->perm;
 
   status = install_uidgid_lookup (ins->owner, &uid, ins->group, &gid);
   if (status.status != INSTALL_STATUS_OK) return status;
@@ -1071,9 +1066,7 @@ instchk_copy (struct install_item *ins, unsigned int flags)
   struct install_status_t status = INSTALL_STATUS_INIT;
   user_id_t uid;
   group_id_t gid;
-  permissions_t perm;
-
-  perm.value = ins->perm;
+  permissions_t perm = { ins->perm };
 
   status = install_uidgid_lookup (ins->owner, &uid, ins->group, &gid);
   if (status.status != INSTALL_STATUS_OK) return status;
@@ -1093,9 +1086,7 @@ instchk_link (struct install_item *ins, unsigned int flags)
   struct install_status_t status = INSTALL_STATUS_INIT;
   user_id_t uid;
   group_id_t gid;
-  permissions_t perm;
-
-  perm.value = ins->perm;
+  permissions_t perm = { ins->perm };
 
   status = install_uidgid_lookup (ins->owner, &uid, ins->group, &gid);
   if (status.status != INSTALL_STATUS_OK) return status;
@@ -1115,9 +1106,7 @@ instchk_mkdir (struct install_item *ins, unsigned int flags)
   struct install_status_t status = INSTALL_STATUS_INIT;
   user_id_t uid;
   group_id_t gid;
-  permissions_t perm;
-
-  perm.value = ins->perm;
+  permissions_t perm = { ins->perm };
 
   status = install_uidgid_lookup (ins->owner, &uid, ins->group, &gid);
   if (status.status != INSTALL_STATUS_OK) return status;
@@ -1279,17 +1268,14 @@ install_suffix_sanitize (char *buffer, unsigned int size)
 }
 
 struct install_status_t
-install_init (const char *suffix_file)
+install_init (void)
 {
-  static char error_buffer [INSTALL_MAX_PATHLEN];
   struct install_status_t status = INSTALL_STATUS_INIT;
   FILE *fp;
 
-  fp = fopen (suffix_file, "rb");
+  fp = fopen ("conf-sosuffix", "rb");
   if (fp == NULL) {
-    snprintf (error_buffer, sizeof (error_buffer),
-      "could not open %s", suffix_file);
-    status.message = error_buffer;
+    status.message = "could not open conf-sosuffix";
     status.status = INSTALL_STATUS_ERROR;
     return status;
   }
@@ -1300,15 +1286,11 @@ install_init (const char *suffix_file)
   inst_dlib_suffix [0] = '.';
   if (fread (inst_dlib_suffix + 1, 1, sizeof (inst_dlib_suffix) - 2, fp) == 0) {
     if (ferror (fp)) {
-      snprintf (error_buffer, sizeof (error_buffer),
-        "error reading %s", suffix_file);
-      status.message = error_buffer;
+      status.message = "error reading conf-sosuffix";
       status.status = INSTALL_STATUS_ERROR;
     }
     if (feof (fp)) {
-      snprintf (error_buffer, sizeof (error_buffer),
-        "%s is empty", suffix_file);
-      status.message = error_buffer;
+      status.message = "empty conf-sosuffix";
       status.status = INSTALL_STATUS_ERROR;
     }
     fclose (fp);
@@ -1318,9 +1300,7 @@ install_init (const char *suffix_file)
   install_suffix_sanitize (inst_dlib_suffix, sizeof (inst_dlib_suffix));
 
   if (fclose (fp) != 0) {
-    snprintf (error_buffer, sizeof (error_buffer),
-      "could not close %s", suffix_file);
-    status.message = error_buffer;
+    status.message = "could not close conf-sosuffix";
     status.status = INSTALL_STATUS_ERROR;
     return status;
   }

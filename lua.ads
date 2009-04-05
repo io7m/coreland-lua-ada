@@ -1,523 +1,536 @@
 -- Lua API
 
-with interfaces.c;
-with interfaces.c.strings;
-with system;
-with ada.strings.Unbounded;
+with Interfaces.C;
+with Interfaces.C.Strings;
+with System;
+with Ada.Strings.Unbounded;
 
-package lua is
-  package ic renames interfaces.c;
-  package ics renames interfaces.c.strings;
-  package su renames ada.strings.Unbounded;
+package Lua is
+  package IC renames Interfaces.C;
+  package ICS renames Interfaces.C.Strings;
+  package UB_Strings renames Ada.Strings.Unbounded;
 
-  use type ics.chars_ptr;
-  use type ic.int;
+  use type ICS.chars_ptr;
+  use type IC.int;
 
   --
   -- These types must match the integer types defined in your
   -- Lua implementation.
   --
 
-  type int_t is new ic.int;
-  subtype natural_t is int_t range 0 .. int_t'last;
-  subtype number_t is ic.double;
+  type Integer_t is new IC.int;
+  subtype Natural_t is Integer_t range 0 .. Integer_t'Last;
+  subtype Number_t is IC.double;
 
-  type error_t is
-   (lua_error_none,
-    lua_error_runtime,
-    lua_error_file,
-    lua_error_syntax,
-    lua_error_memory,
-    lua_error_error,
-    lua_exception);
+  type Error_t is
+   (Lua_Error_None,
+    Lua_Error_Runtime,
+    Lua_Error_File,
+    Lua_Error_Syntax,
+    Lua_Error_Memory,
+    Lua_Error_Error,
+    Lua_Exception);
 
-  for error_t use
-   (lua_error_none    => 0,
-    lua_error_runtime => 1,
-    lua_error_file    => 2,
-    lua_error_syntax  => 3,
-    lua_error_memory  => 4,
-    lua_error_error   => 5,
-    lua_exception     => 6);
+  for Error_t use
+   (Lua_Error_None    => 0,
+    Lua_Error_Runtime => 1,
+    Lua_Error_File    => 2,
+    Lua_Error_Syntax  => 3,
+    Lua_Error_Memory  => 4,
+    Lua_Error_Error   => 5,
+    Lua_Exception     => 6);
 
-  type error_msg_t (length : natural) is record
-    code    : error_t;
-    message : string (1 .. length);
+  type Error_Message_t (Length : Natural) is record
+    Code    : Error_t;
+    Message : String (1 .. Length);
   end record;
 
-  no_error : constant error_msg_t :=
-   (length  => 0,
-    code    => lua_error_none,
-    message => "");
+  No_Error : constant Error_Message_t :=
+    (Length  => 0,
+     Code    => Lua_Error_None,
+     Message => "");
 
-  type state_t is private;
-  type debug_t is private;
-  type obj_ref_t is new integer;
+  type State_t is private;
+  type Debug_t is private;
+  type Object_Ref_t is new Integer;
 
-  type user_func_t is access function (state : state_t) return int_t;
-  pragma convention (c, user_func_t);
+  type User_Function_t is access function (State : State_t) return Integer_t;
+  pragma Convention (C, User_Function_t);
 
-  type hook_t is access procedure
-   (state : state_t;
-    d     : debug_t);
-  pragma convention (c, hook_t);
+  type Hook_t is access procedure
+    (State : State_t;
+     Debug : Debug_t);
+  pragma Convention (C, Hook_t);
 
-  type chunk_reader_t is access function
-   (state : state_t;
-    data  : system.address;
-    size  : access ic.size_t) return system.address;
-  pragma convention (c, chunk_reader_t);
+  type Chunk_Reader_t is access function
+   (State : State_t;
+    Data  : System.Address;
+    Size  : access IC.size_t)
+  return    System.Address;
+  pragma Convention (C, Chunk_Reader_t);
 
-  type chunk_writer_t is access function
-   (state : state_t;
-    p     : system.address;
-    size  : ic.size_t;
-    data  : system.address) return int_t;
-  pragma convention (c, chunk_writer_t);
+  type Chunk_Writer_t is access function
+   (State : State_t;
+    P     : System.Address;
+    Size  : IC.size_t;
+    Data  : System.Address)
+  return    Integer_t;
+  pragma Convention (C, Chunk_Writer_t);
 
-  type type_t is
-   (t_none,
-    t_nil,
-    t_boolean,
-    t_lightuserdata,
-    t_number,
-    t_string,
-    t_table,
-    t_function,
-    t_userdata,
-    t_thread);
+  type Type_t is
+   (T_None,
+    T_Nil,
+    T_Boolean,
+    T_Light_Userdata,
+    T_Number,
+    T_String,
+    T_Table,
+    T_Function,
+    T_Userdata,
+    T_Thread);
 
-  type mask_t is mod 16;
+  type Mask_t is mod 16;
 
   --
-  -- constants
+  -- Constants
   --
 
-  mask_none      : constant mask_t := 2#0000_0000#;
-  mask_call      : constant mask_t := 2#0000_0001#;
-  mask_return    : constant mask_t := 2#0000_0010#;
-  mask_line      : constant mask_t := 2#0000_0100#;
-  mask_count     : constant mask_t := 2#0000_1000#;
+  Mask_None   : constant := 2#0000_0000#;
+  Mask_Call   : constant := 2#0000_0001#;
+  Mask_Return : constant := 2#0000_0010#;
+  Mask_Line   : constant := 2#0000_0100#;
+  Mask_Count  : constant := 2#0000_1000#;
 
-  nil_reference  : constant obj_ref_t := -1;
-  no_reference   : constant obj_ref_t := -2;
+  Nil_Reference : constant := -1;
+  No_Reference  : constant := -2;
 
-  state_error    : constant state_t;
+  State_Error : constant State_t;
 
-  registryindex  : constant int_t := -10000;
-  environindex   : constant int_t := -10001;
-  globalsindex   : constant int_t := -10002;
-  multret        : constant int_t := -1;
-
-  registry_index : constant integer := -10000;
-  environ_index  : constant integer := -10001;
-  globals_index  : constant integer := -10002;
-  mult_ret       : constant integer := -1;
+  Registry_Index : constant := -10000;
+  Environ_Index  : constant := -10001;
+  Globals_Index  : constant := -10002;
+  Multi_Return   : constant := -1;
 
   --
   -- API
   --
 
-  -- state manipulation
+  -- State manipulation
 
-  function open return state_t;
+  function Open return State_t;
 
-  procedure close (state : state_t);
+  procedure Close (State : State_t);
 
-  function at_panic
-   (state          : state_t;
-    panic_function : user_func_t) return user_func_t;
+  function At_Panic
+    (State          : State_t;
+     Panic_Function : User_Function_t) return User_Function_t;
 
-  procedure at_panic
-   (state          : state_t;
-    panic_function : user_func_t);
+  procedure At_Panic
+    (State          : State_t;
+     Panic_Function : User_Function_t);
 
-  -- stack manipulation
+  -- Stack manipulation
 
-  function get_top (state : state_t) return integer;
+  function Get_Top (State : State_t) return Integer;
 
-  procedure set_top
-   (state : state_t;
-    index : integer);
+  procedure Set_Top
+    (State : State_t;
+     Index : Integer);
 
-  procedure push_value
-   (state : state_t;
-    index : integer);
+  procedure Push_Value
+    (State : State_t;
+     Index : Integer);
 
-  procedure remove
-   (state : state_t;
-    index : integer);
+  procedure Remove
+    (State : State_t;
+     Index : Integer);
 
-  procedure insert
-   (state : state_t;
-    index : integer);
+  procedure Insert
+    (State : State_t;
+     Index : Integer);
 
-  procedure replace
-   (state : state_t;
-    index : integer);
+  procedure Replace
+    (State : State_t;
+     Index : Integer);
 
-  function check_stack
-   (state : state_t;
-    size  : integer) return integer;
+  function Check_Stack
+    (State : State_t;
+     Size  : Integer) return Integer;
 
-  -- check functions (stack -> ada)
+  -- Check functions (stack -> ada)
 
-  function is_number
-   (state : state_t;
-    index : integer) return boolean;
+  function Is_Number
+    (State : State_t;
+     Index : Integer) return Boolean;
 
-  function is_string
-   (state : state_t;
-    index : integer) return boolean;
+  function Is_String
+    (State : State_t;
+     Index : Integer) return Boolean;
 
-  function is_user_function
-   (state : state_t;
-    index : integer) return boolean;
+  function Is_User_Function
+    (State : State_t;
+     Index : Integer) return Boolean;
 
-  function is_user_data
-   (state : state_t;
-    index : integer) return boolean;
+  function Is_Userdata
+    (State : State_t;
+     Index : Integer) return Boolean;
 
-  function is_nil
-   (state : state_t;
-    index : integer) return boolean;
+  function Is_Nil
+    (State : State_t;
+     Index : Integer) return Boolean;
 
-  function is_equal
-   (state  : state_t;
-    index1 : integer;
-    index2 : integer) return boolean;
+  function Is_Equal
+    (State  : State_t;
+     Index1 : Integer;
+     Index2 : Integer) return Boolean;
 
-  function is_raw_equal
-   (state  : state_t;
-    index1 : integer;
-    index2 : integer) return boolean;
+  function Is_Raw_Equal
+    (State  : State_t;
+     Index1 : Integer;
+     Index2 : Integer) return Boolean;
 
-  function is_less_than
-   (state  : state_t;
-    index1 : integer;
-    index2 : integer) return boolean;
+  function Is_Less_Than
+   (State  : State_t;
+    Index1 : Integer;
+    Index2 : Integer) return Boolean;
 
-  function type_of
-   (state : state_t;
-    index : integer) return type_t;
+  function Type_Of
+    (State : State_t;
+     Index : Integer) return Type_t;
 
-  function type_name
-   (state : state_t;
-    index : integer) return string;
+  function Type_Name
+    (State : State_t;
+     Index : Integer) return String;
 
-  function type_name (t : lua.type_t) return string;
+  function Type_Name
+    (T : Lua.Type_t) return String;
 
-  function to_number
-   (state : state_t;
-    index : integer) return number_t;
+  function To_Number
+    (State : State_t;
+     Index : Integer) return Number_t;
 
-  function to_string
-   (state : state_t;
-    index : integer) return string;
+  function To_String
+    (State : State_t;
+     Index : Integer) return String;
 
-  function to_boolean
-   (state : state_t;
-    index : integer) return boolean;
+  function To_Boolean
+    (State : State_t;
+     Index : Integer) return Boolean;
 
-  function to_cfunction
-   (state : state_t;
-    index : integer) return user_func_t;
+  function To_C_Function
+    (State : State_t;
+     Index : Integer) return User_Function_t;
 
-  function objlen
-   (state : state_t;
-    index : integer) return int_t;
+  function Object_Length
+    (State : State_t;
+     Index : Integer) return Integer_t;
 
-  function strlen
-   (state : state_t;
-    index : integer) return int_t;
+  function String_Length
+    (State : State_t;
+     Index : Integer) return Integer_t;
 
-  -- push functions (ada -> stack)
+  -- Push functions (ada -> stack)
 
-  procedure push_nil (state : state_t);
+  procedure Push_Nil (State : State_t);
 
-  procedure push_number
-   (state : state_t;
-    n     : number_t);
+  procedure Push_Number
+    (State : State_t;
+     N     : Number_t);
 
-  procedure push_boolean
-   (state : state_t;
-    b     : boolean);
+  procedure Push_Boolean
+    (State : State_t;
+     B     : Boolean);
 
-  procedure push_string
-   (state : state_t;
-    str   : ics.chars_ptr);
+  procedure Push_String
+    (State : State_t;
+     Str   : ICS.chars_ptr);
 
-  procedure push_string
-   (state : state_t;
-    str   : string);
+  procedure Push_String
+    (State : State_t;
+     Str   : String);
 
-  procedure push_string
-   (state : state_t;
-    str   : su.unbounded_string);
+  procedure Push_String
+    (State : State_t;
+     Str   : UB_Strings.Unbounded_String);
 
-  procedure push_string
-   (state   : state_t;
-    address : system.address;
-    size    : positive);
+  procedure Push_String
+    (State   : State_t;
+     Address : System.Address;
+     Size    : Positive);
 
-  procedure push_user_closure
-   (state      : state_t;
-    func       : user_func_t;
-    num_params : integer);
+  procedure Push_User_Closure
+    (State      : State_t;
+     Func       : User_Function_t;
+     Num_Params : Integer);
 
-  procedure push_user_function
-   (state : state_t;
-    func  : user_func_t);
+  procedure Push_User_Function
+    (State : State_t;
+     Func  : User_Function_t);
 
-  -- new functions
+  -- New functions
 
-  procedure new_table (state : state_t);
+  procedure New_Table (State : State_t);
 
-  function new_thread (state : state_t) return state_t;
+  function New_Thread (State : State_t) return State_t;
 
-  -- get functions (lua -> stack)
+  -- Get functions (lua -> stack)
 
-  procedure get_table
-   (state : state_t;
-    index : integer);
+  procedure Get_Table
+    (State : State_t;
+     Index : Integer);
 
-  function get_metatable
-   (state : state_t;
-    index : integer) return error_t;
+  function Get_Metatable
+    (State : State_t;
+     Index : Integer) return Error_t;
 
-  procedure raw_get
-   (state : state_t;
-    index : integer);
+  procedure Raw_Get
+    (State : State_t;
+     Index : Integer);
 
-  procedure raw_get_int
-   (state   : state_t;
-    index   : integer;
-    element : integer);
+  procedure Raw_Get_Int
+    (State   : State_t;
+     Index   : Integer;
+     Element : Integer);
 
-  procedure get_field
-   (state : state_t;
-    index : integer;
-    key   : ics.chars_ptr);
+  procedure Get_Field
+    (State : State_t;
+     Index : Integer;
+     Key   : ICS.chars_ptr);
 
-  procedure get_field
-   (state : state_t;
-    index : integer;
-    key   : string);
+  procedure Get_Field
+    (State : State_t;
+     Index : Integer;
+     Key   : String);
 
-  procedure get_field
-   (state : state_t;
-    index : integer;
-    key   : su.unbounded_string);
+  procedure Get_Field
+    (State : State_t;
+     Index : Integer;
+     Key   : UB_Strings.Unbounded_String);
 
-  procedure get_global
-   (state : state_t;
-    key   : ics.chars_ptr);
+  procedure Get_Global
+    (State : State_t;
+     Key   : ICS.chars_ptr);
 
-  procedure get_global
-   (state : state_t;
-    key   : string);
+  procedure Get_Global
+    (State : State_t;
+     Key   : String);
 
-  procedure get_global
-   (state : state_t;
-    key   : su.unbounded_string);
+  procedure Get_Global
+    (State : State_t;
+     Key   : UB_Strings.Unbounded_String);
 
-  procedure get_fenv
-   (state : state_t;
-    index : integer);
+  procedure Get_FEnv
+    (State : State_t;
+     Index : Integer);
 
-  -- set functions (stack -> lua)
+  -- Set functions (stack -> lua)
 
-  procedure set_table
-   (state : state_t;
-    index : integer);
+  procedure Set_Table
+    (State : State_t;
+     Index : Integer);
 
-  function set_metatable
-   (state : state_t;
-    index : integer) return error_t;
+  function Set_Metatable
+    (State : State_t;
+     Index : Integer) return Error_t;
 
-  procedure raw_set
-   (state : state_t;
-    index : integer);
+  procedure Raw_Set
+    (State : State_t;
+     Index : Integer);
 
-  procedure raw_set_int
-   (state   : state_t;
-    index   : integer;
-    element : integer);
+  procedure Raw_Set_Int
+    (State   : State_t;
+     Index   : Integer;
+     Element : Integer);
 
-  procedure set_field
-   (state : state_t;
-    index : integer;
-    key   : ics.chars_ptr);
+  procedure Set_Field
+    (State : State_t;
+     Index : Integer;
+     Key   : ICS.chars_ptr);
 
-  procedure set_field
-   (state : state_t;
-    index : integer;
-    key   : string);
+  procedure Set_Field
+    (State : State_t;
+     Index : Integer;
+     Key   : String);
 
-  procedure set_field
-   (state : state_t;
-    index : integer;
-    key   : su.unbounded_string);
+  procedure Set_Field
+    (State : State_t;
+     Index : Integer;
+     Key   : UB_Strings.Unbounded_String);
 
-  procedure set_global
-   (state : state_t;
-    key   : ics.chars_ptr);
+  procedure Set_Global
+    (State : State_t;
+     Key   : ICS.chars_ptr);
 
-  procedure set_global
-   (state : state_t;
-    key   : string);
+  procedure Set_Global
+    (State : State_t;
+     Key   : String);
 
-  procedure set_global
-   (state : state_t;
-    key   : su.unbounded_string);
+  procedure Set_Global
+    (State : State_t;
+     Key   : UB_Strings.Unbounded_String);
 
-  function set_fenv
-   (state : state_t;
-    index : integer) return error_t;
+  function Set_FEnv
+    (State : State_t;
+     Index : Integer) return Error_t;
 
-  -- load functions
+  -- Load functions
 
-  function load_buffer
-   (state  : state_t;
-    buffer : ics.chars_ptr;
-    size   : ic.size_t;
-    name   : string) return error_t;
+  function Load_Buffer
+   (State  : State_t;
+    Buffer : ICS.chars_ptr;
+    Size   : IC.size_t;
+    Name   : String) return Error_t;
 
-  function load_buffer
-   (state  : state_t;
-    buffer : string;
-    size   : natural;
-    name   : string) return error_t;
+  function Load_Buffer
+   (State  : State_t;
+    Buffer : String;
+    Size   : Natural;
+    Name   : String) return Error_t;
 
-  function load_buffer
-   (state  : state_t;
-    buffer : su.unbounded_string;
-    name   : string) return error_t;
+  function Load_Buffer
+   (State  : State_t;
+    Buffer : UB_Strings.Unbounded_String;
+    Name   : String) return Error_t;
 
-  function load_file
-   (state : state_t;
-    file  : string) return error_t;
+  function Load_File
+    (State : State_t;
+     File  : String) return Error_t;
 
-  function load_string
-   (state  : state_t;
-    buffer : string) return error_t;
+  function Load_String
+    (State  : State_t;
+     Buffer : String) return Error_t;
 
-  -- execute functions
+  -- Execute functions
 
-  function exec_file
-   (state : state_t;
-    file  : string) return error_t;
+  function Exec_File
+    (State : State_t;
+     File  : String) return Error_t;
 
-  function exec_string
-   (state : state_t;
-    str   : string) return error_t;
+  function Exec_String
+    (State : State_t;
+     Str   : String) return Error_t;
 
-  -- coroutines
-  function resume
-   (state         : state_t;
-    num_arguments : integer) return error_msg_t;
+  -- Coroutines
 
-  function yield
-   (state    : state_t;
-    nresults : int_t) return int_t;
-  pragma import (c, yield, "lua_yield");
+  function Resume
+    (State         : State_t;
+     Num_Arguments : Integer) return Error_Message_t;
 
-  -- misc
+  function Yield
+    (State       : State_t;
+     Num_Results : Integer_t) return Integer_t;
+  pragma Import (C, Yield, "lua_yield");
 
-  procedure concat
-   (state : state_t;
-    n     : natural);
+  -- Misc
 
-  procedure register
-   (state     : state_t;
-    func_name : string;
-    func_ptr  : user_func_t);
+  procedure Concat
+    (State : State_t;
+     N     : Natural);
 
-  procedure pop
-   (state : state_t;
-    count : integer);
+  procedure Register
+    (State     : State_t;
+     Func_Name : String;
+     Func_Ptr  : User_Function_t);
 
-  function next
-   (state : state_t;
-    index : integer) return integer;
+  procedure Pop
+    (State : State_t;
+     Count : Integer);
 
-  function reference
-   (state : state_t;
-    table : integer) return obj_ref_t;
-  pragma import (c, reference, "luaL_ref");
+  function Next
+    (State : State_t;
+     Index : Integer) return Integer;
 
-  procedure unreference
-   (state : state_t;
-    table : integer;
-    ref   : obj_ref_t);
-  pragma import (c, unreference, "luaL_unref");
+  function Reference
+    (State : State_t;
+     Table : Integer) return Object_Ref_t;
+  pragma Import (C, Reference, "luaL_ref");
 
-  function reference (state : state_t) return obj_ref_t;
+  procedure Unreference
+    (State : State_t;
+     Table : Integer;
+     Ref   : Object_Ref_t);
+  pragma Import (C, Unreference, "luaL_unref");
 
-  procedure unreference
-   (state : state_t;
-    ref   : obj_ref_t);
+  function Reference (State : State_t) return Object_Ref_t;
 
-  procedure dereference
-   (state : state_t;
-    ref   : obj_ref_t);
+  procedure Unreference (State : State_t; Ref : Object_Ref_t);
 
-  -- lua calls
+  procedure Dereference (State : State_t; Ref : Object_Ref_t);
 
-  procedure call
-   (state         : state_t;
-    num_arguments : integer;
-    num_results   : integer);
+  -- Lua calls
 
-  function pcall
-   (state         : state_t;
-    num_arguments : integer;
-    num_results   : integer;
-    error_func    : integer) return error_t;
+  procedure Call
+    (State         : State_t;
+     Num_Arguments : Integer;
+     Num_Results   : Integer);
 
-  procedure error (state : state_t);
-  pragma no_return (error);
+  function PCall
+   (State         : State_t;
+    Num_Arguments : Integer;
+    Num_Results   : Integer;
+    Error_Func    : Integer) return Error_t;
 
-  -- versioning
-  function version return string;
-  function release return string;
-  function version return integer;
+  function Protected_Call
+   (State         : State_t;
+    Num_Arguments : Integer;
+    Num_Results   : Integer;
+    Error_Func    : Integer) return Error_t renames PCall;
 
-  -- debug hooks
+  procedure Error (State : State_t);
+  pragma No_Return (Error);
 
-  procedure set_hook
-   (state : state_t;
-    func  : hook_t;
-    amask : mask_t;
-    count : integer);
+  -- Versioning
 
-  function get_hook_mask (state : state_t) return mask_t;
+  function Version return String;
+  function Release return String;
+  function Version return Integer;
+
+  -- Debug hooks
+
+  procedure Set_Hook
+   (State : State_t;
+    Func  : Hook_t;
+    AMask : Mask_t;
+    Count : Integer);
+
+  function Get_Hook_Mask (State : State_t) return Mask_t;
+
+  -- Generic typed loading.
+
+  generic
+    type User_Data is limited private;
+
+  function Load_Typed
+    (State      : State_t;
+     Reader     : Chunk_Reader_t;
+     Data       : access User_Data;
+     Chunk_Name : String) return Error_t;
 
 private
 
-  type state_t is new system.address;
-  type debug_t is new system.address;
-  state_error : constant state_t := state_t (system.null_address);
+  type State_t is new System.Address;
+  type Debug_t is new System.Address;
 
-  str_traceback : constant ics.chars_ptr := ics.new_string ("_traceback");
+  State_Error   : constant State_t := State_t (System.Null_Address);
+  Str_Traceback : constant ICS.chars_ptr := ICS.New_String ("_traceback");
 
-  msg_err_none      : aliased string := "";
-  msg_err_syntax    : aliased string := "syntax error: ";
-  msg_error_runtime : aliased string := "runtime error: ";
-  msg_err_memory    : aliased string := "memory error: ";
-  msg_err_error     : aliased string := "error-handling error: ";
-  msg_err_file      : aliased string := "file error: ";
+  Msg_Error_None    : aliased constant String := "";
+  Msg_Error_Syntax  : aliased constant String := "syntax error: ";
+  Msg_Error_Runtime : aliased constant String := "runtime error: ";
+  Msg_Error_Memory  : aliased constant String := "memory error: ";
+  Msg_Error_Error   : aliased constant String := "error-handling error: ";
+  Msg_Error_File    : aliased constant String := "file error: ";
 
-  type str_access_t is access all string;
-  type str_access_array_t is array (error_t) of str_access_t;
+  type Str_Access_t is access constant String;
+  type Str_Access_Array_t is array (Error_t) of Str_Access_t;
 
-  error_messages : str_access_array_t :=
-   (lua_error_none    => msg_err_none'access,
-    lua_error_runtime => msg_error_runtime'access,
-    lua_error_memory  => msg_err_memory'access,
-    lua_error_file    => msg_err_file'access,
-    lua_error_syntax  => msg_err_syntax'access,
-    lua_error_error   => msg_err_error'access,
-    lua_exception     => msg_err_none'access);
+  Error_Messages : Str_Access_Array_t :=
+   (Lua_Error_None    => Msg_Error_None'Access,
+    Lua_Error_Runtime => Msg_Error_Runtime'Access,
+    Lua_Error_Memory  => Msg_Error_Memory'Access,
+    Lua_Error_File    => Msg_Error_File'Access,
+    Lua_Error_Syntax  => Msg_Error_Syntax'Access,
+    Lua_Error_Error   => Msg_Error_Error'Access,
+    Lua_Exception     => Msg_Error_None'Access);
 
-end lua;
+end Lua;
