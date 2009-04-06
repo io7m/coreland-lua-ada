@@ -594,9 +594,9 @@ package body Lua is
 
   function Check_Stack
    (State : State_t;
-    Size  : Integer) return Integer is
+    Size  : Integer) return Boolean is
   begin
-    return Integer (C_Bindings.lua_checkstack (State, Integer_t (Size)));
+    return C_Bindings.lua_checkstack (State, Integer_t (Size)) /= 0;
   end Check_Stack;
 
   --
@@ -855,13 +855,13 @@ package body Lua is
     C_Bindings.lua_rawget (State, Integer_t (Index));
   end Raw_Get;
 
-  procedure Raw_Get_Int
+  procedure Raw_Get_Index
     (State   : State_t;
      Index   : Integer;
      Element : Integer) is
   begin
     C_Bindings.lua_rawgeti (State, Integer_t (Index), Integer_t (Element));
-  end Raw_Get_Int;
+  end Raw_Get_Index;
 
   procedure Get_Field
     (State : State_t;
@@ -965,13 +965,13 @@ package body Lua is
     C_Bindings.lua_createtable (State, 0, 0);
   end New_Table;
 
-  procedure Raw_Set_Int
+  procedure Raw_Set_Index
     (State   : State_t;
      Index   : Integer;
      Element : Integer) is
   begin
     C_Bindings.lua_rawseti (State, Integer_t (Index), Integer_t (Element));
-  end Raw_Set_Int;
+  end Raw_Set_Index;
 
   procedure Set_Field
     (State : State_t;
@@ -1152,7 +1152,7 @@ package body Lua is
    (State : State_t;
     Ref   : Object_Ref_t) is
   begin
-    Raw_Get_Int (State, Registry_Index, Integer (Ref));
+    Raw_Get_Index (State, Registry_Index, Integer (Ref));
   end Dereference;
 
   function Version return String is

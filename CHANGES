@@ -11,3 +11,5 @@
 20090405 note: version number changed to track Lua distribution.
 20090405 code: detect ability of lua library to propagate exceptions at
                compile time. Lua.Config.
+20090405 code: Check_Stack -> Boolean.
+20090406 code: *Set_Int -> *Set_Index.

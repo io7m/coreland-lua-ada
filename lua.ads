@@ -155,7 +155,7 @@ package Lua is
 
   function Check_Stack
     (State : State_t;
-     Size  : Integer) return Integer;
+     Size  : Integer) return Boolean;
 
   -- Check functions (stack -> ada)
 
@@ -287,7 +287,7 @@ package Lua is
     (State : State_t;
      Index : Integer);
 
-  procedure Raw_Get_Int
+  procedure Raw_Get_Index
     (State   : State_t;
      Index   : Integer;
      Element : Integer);
@@ -337,7 +337,7 @@ package Lua is
     (State : State_t;
      Index : Integer);
 
-  procedure Raw_Set_Int
+  procedure Raw_Set_Index
     (State   : State_t;
      Index   : Integer;
      Element : Integer);

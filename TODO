@@ -1,1 +1,5 @@
 Detect C types for lua_integer, lua_number, etc.
+
+Test entire API.
+
+Complete missing subprograms.
