@@ -131,6 +131,16 @@ package body Lua is
        Index : Integer_t) return Number_t;
     pragma Import (C, lua_tonumber, "lua_tonumber");
 
+    function lua_tointeger
+      (State : State_t;
+       Index : Integer_t) return Integer_t;
+    pragma Import (C, lua_tointeger, "lua_tointeger");
+
+    function lua_tothread
+      (State : State_t;
+       Index : Integer_t) return State_t;
+    pragma Import (C, lua_tothread, "lua_tothread");
+
     function luext_tostring
       (State : State_t;
        Index : Integer_t) return ICS.chars_ptr;
@@ -646,6 +656,55 @@ package body Lua is
     return C_Bindings.lua_type (State, Integer_t (Index)) = 0;
   end Is_Nil;
 
+  function Is_None_Or_Nil
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Is_None (State, Index) or Is_Nil (State, Index);
+  end Is_None_Or_Nil;
+
+  function Is_Table
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Type_Of (State, Index) = T_Table;
+  end Is_Table;
+
+  function Is_Boolean
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Type_Of (State, Index) = T_Boolean;
+  end Is_Boolean;
+
+  function Is_Function
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Type_Of (State, Index) = T_Function;
+  end Is_Function;
+
+  function Is_Thread
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Type_Of (State, Index) = T_Thread;
+  end Is_Thread;
+
+  function Is_None
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Type_Of (State, Index) = T_None;
+  end Is_None;
+
+  function Is_Light_Userdata
+    (State : State_t;
+     Index : Integer) return Boolean is
+  begin
+    return Type_Of (State, Index) = T_Light_Userdata;
+  end Is_Light_Userdata;
+
   function Type_Of
     (State : State_t;
      Index : Integer) return Type_t
@@ -708,6 +767,20 @@ package body Lua is
   begin
     return C_Bindings.lua_toboolean (State, Integer_t (Index)) /= 0;
   end To_Boolean;
+
+  function To_Integer
+    (State : State_t;
+     Index : Integer) return Integer_t is
+  begin
+    return C_Bindings.lua_tointeger (State, Integer_t (Index));
+  end To_Integer;
+
+  function To_Thread
+    (State : State_t;
+     Index : Integer) return State_t is
+  begin
+    return C_Bindings.lua_tothread (State, Integer_t (Index));
+  end To_Thread;
 
   function To_C_Function
    (State : State_t;

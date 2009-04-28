@@ -190,7 +190,43 @@ package Lua is
     (State : State_t;
      Index : Integer) return Boolean;
 
+  -- proc_map : lua_isnil
   function Is_Nil
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_istable
+  function Is_Table
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_isboolean
+  function Is_Boolean
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_isfunction
+  function Is_Function
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_isthread
+  function Is_Thread
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_isnone
+  function Is_None
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_isnoneornil
+  function Is_None_Or_Nil
+    (State : State_t;
+     Index : Integer) return Boolean;
+
+  -- proc_map : lua_islightuserdata
+  function Is_Light_Userdata
     (State : State_t;
      Index : Integer) return Boolean;
 
@@ -231,6 +267,17 @@ package Lua is
     (State : State_t;
      Index : Integer) return Number_t;
 
+  -- proc_map : lua_tointeger
+  function To_Integer
+    (State : State_t;
+     Index : Integer) return Integer_t;
+
+  -- proc_map : lua_tothread
+  function To_Thread
+    (State : State_t;
+     Index : Integer) return State_t;
+
+  -- proc_map : lua_tostring
   function To_String
     (State : State_t;
      Index : Integer) return String;
@@ -500,6 +547,7 @@ package Lua is
      Func_Name : String;
      Func_Ptr  : User_Function_t);
 
+  -- proc_map : lua_pop
   procedure Pop
     (State : State_t;
      Count : Integer);
