@@ -250,11 +250,6 @@ package Lua is
     (State : State_t;
      Index : Integer) return Integer_t;
 
-  -- proc_map : lua_objlen
-  function String_Length
-    (State : State_t;
-     Index : Integer) return Integer_t;
-
   -- Push functions (ada -> stack)
 
   -- proc_map : lua_pushnil
@@ -511,13 +506,13 @@ package Lua is
   -- proc_map : luaL_ref
   function Reference
     (State : State_t;
-     Table : Integer) return Object_Ref_t;
+     Index : Integer) return Object_Ref_t;
   pragma Import (C, Reference, "luaL_ref");
 
   -- proc_map : luaL_unref
   procedure Unreference
     (State : State_t;
-     Table : Integer;
+     Index : Integer;
      Ref   : Object_Ref_t);
   pragma Import (C, Unreference, "luaL_unref");
 
@@ -569,6 +564,9 @@ package Lua is
 
   -- proc_map : lua_gethookmask
   function Get_Hook_Mask (State : State_t) return Mask_t;
+
+  -- proc_map : lua_gethookcount
+  function Get_Hook_Count (State : State_t) return Natural;
 
   -- Generic typed loading.
 

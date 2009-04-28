@@ -303,6 +303,9 @@ package body Lua is
     function lua_gethookmask (State : State_t) return Integer_t;
     pragma Import (C, lua_gethookmask, "lua_gethookmask");
 
+    function lua_gethookcount (State : State_t) return Integer_t;
+    pragma Import (C, lua_gethookcount, "lua_gethookcount");
+
     --
     -- set functions
     --
@@ -509,6 +512,11 @@ package body Lua is
   begin
     return Mask_t (C_Bindings.lua_gethookmask (State));
   end Get_Hook_Mask;
+
+  function Get_Hook_Count (State : State_t) return Natural is
+  begin
+    return Natural (C_Bindings.lua_gethookcount (State));
+  end Get_Hook_Count;
 
   procedure Error (State : State_t) is
   begin
@@ -738,13 +746,6 @@ package body Lua is
   begin
     return C_Bindings.lua_objlen (State, Integer_t (Index));
   end Object_Length;
-
-  function String_Length
-   (State : State_t;
-    Index : Integer) return Integer_t is
-  begin
-    return C_Bindings.lua_objlen (State, Integer_t (Index));
-  end String_Length;
 
   --
   -- push functions (Ada -> stack)
