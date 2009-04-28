@@ -961,6 +961,17 @@ package body Lua is
     C_Bindings.lua_rawset (State, Integer_t (Index));
   end Raw_Set;
 
+  procedure Create_Table
+    (State              : State_t;
+     Array_Elements     : in Natural;
+     Non_Array_Elements : in Natural) is
+  begin
+    C_Bindings.lua_createtable
+      (State   => State,
+       num_arr => Integer_t (Array_Elements),
+       num_rec => Integer_t (Non_Array_Elements));
+  end Create_Table;
+
   procedure New_Table (State : State_t) is
   begin
     C_Bindings.lua_createtable (State, 0, 0);

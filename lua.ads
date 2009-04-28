@@ -300,6 +300,12 @@ package Lua is
   -- New functions
 
   -- proc_map : lua_createtable
+  procedure Create_Table
+    (State              : State_t;
+     Array_Elements     : in Natural;
+     Non_Array_Elements : in Natural);
+
+  -- proc_map : lua_newtable
   procedure New_Table (State : State_t);
 
   -- proc_map : lua_newthread
