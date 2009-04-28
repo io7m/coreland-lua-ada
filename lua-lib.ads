@@ -21,24 +21,31 @@ package Lua.Lib is
     Functions : Register_Array_t;
     num_up    : Integer);
 
+  -- proc_map : luaopen_base
   procedure Open_Base (State : Lua.State_t);
   pragma Import (C, Open_Base, "luaopen_base");
 
+  -- proc_map : luaopen_table
   procedure Open_Table (State : Lua.State_t);
   pragma Import (C, Open_Table, "luaopen_table");
 
+  -- proc_map : luaopen_string
   procedure Open_String (State : Lua.State_t);
   pragma Import (C, Open_String, "luaopen_string");
 
+  -- proc_map : luaopen_io
   procedure Open_IO (State : Lua.State_t);
   pragma Import (C, Open_IO, "luaopen_io");
 
+  -- proc_map : luaopen_math
   procedure Open_Math (State : Lua.State_t);
   pragma Import (C, Open_Math, "luaopen_math");
 
+  -- proc_map : luaopen_debug
   procedure Open_Debug (State : Lua.State_t);
   pragma Import (C, Open_Debug, "luaopen_debug");
 
+  -- proc_map : luaL_openlibs
   procedure Open_Libs (State : Lua.State_t);
   pragma Import (C, Open_Libs, "luaL_openlibs");
 

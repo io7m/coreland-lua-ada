@@ -117,60 +117,75 @@ package Lua is
 
   -- State manipulation
 
+  -- proc_map : luaL_newstate
   function Open return State_t;
 
+  -- proc_map : lua_close
   procedure Close (State : State_t);
 
+  -- proc_map : lua_atpanic
   function At_Panic
     (State          : State_t;
      Panic_Function : User_Function_t) return User_Function_t;
 
+  -- proc_map : lua_atpanic
   procedure At_Panic
     (State          : State_t;
      Panic_Function : User_Function_t);
 
   -- Stack manipulation
 
+  -- proc_map : lua_gettop
   function Get_Top (State : State_t) return Integer;
 
+  -- proc_map : lua_settop
   procedure Set_Top
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_pushvalue
   procedure Push_Value
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_remove
   procedure Remove
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_insert
   procedure Insert
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_replace
   procedure Replace
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_checkstack
   function Check_Stack
     (State : State_t;
      Size  : Integer) return Boolean;
 
   -- Check functions (stack -> ada)
 
+  -- proc_map : lua_isnumber
   function Is_Number
     (State : State_t;
      Index : Integer) return Boolean;
 
+  -- proc_map : lua_isstring
   function Is_String
     (State : State_t;
      Index : Integer) return Boolean;
 
+  -- proc_map : lua_iscfunction
   function Is_User_Function
     (State : State_t;
      Index : Integer) return Boolean;
 
+  -- proc_map : lua_isuserdata
   function Is_Userdata
     (State : State_t;
      Index : Integer) return Boolean;
@@ -179,32 +194,39 @@ package Lua is
     (State : State_t;
      Index : Integer) return Boolean;
 
+  -- proc_map : lua_equal
   function Is_Equal
     (State  : State_t;
      Index1 : Integer;
      Index2 : Integer) return Boolean;
 
+  -- proc_map : lua_rawequal
   function Is_Raw_Equal
     (State  : State_t;
      Index1 : Integer;
      Index2 : Integer) return Boolean;
 
+  -- proc_map : lua_lessthan
   function Is_Less_Than
    (State  : State_t;
     Index1 : Integer;
     Index2 : Integer) return Boolean;
 
+  -- proc_map : lua_type
   function Type_Of
     (State : State_t;
      Index : Integer) return Type_t;
 
+  -- proc_map : lua_typename
   function Type_Name
     (State : State_t;
      Index : Integer) return String;
 
+  -- proc_map : lua_typename
   function Type_Name
     (T : Lua.Type_t) return String;
 
+  -- proc_map : lua_tonumber
   function To_Number
     (State : State_t;
      Index : Integer) return Number_t;
@@ -213,189 +235,231 @@ package Lua is
     (State : State_t;
      Index : Integer) return String;
 
+  -- proc_map : lua_toboolean
   function To_Boolean
     (State : State_t;
      Index : Integer) return Boolean;
 
+  -- proc_map : lua_tocfunction
   function To_C_Function
     (State : State_t;
      Index : Integer) return User_Function_t;
 
+  -- proc_map : lua_objlen
   function Object_Length
     (State : State_t;
      Index : Integer) return Integer_t;
 
+  -- proc_map : lua_objlen
   function String_Length
     (State : State_t;
      Index : Integer) return Integer_t;
 
   -- Push functions (ada -> stack)
 
+  -- proc_map : lua_pushnil
   procedure Push_Nil (State : State_t);
 
+  -- proc_map : lua_pushnumber
   procedure Push_Number
     (State : State_t;
      N     : Number_t);
 
+  -- proc_map : lua_pushboolean
   procedure Push_Boolean
     (State : State_t;
      B     : Boolean);
 
+  -- proc_map : lua_pushstring
   procedure Push_String
     (State : State_t;
      Str   : ICS.chars_ptr);
 
+  -- proc_map : lua_pushlstring
   procedure Push_String
     (State : State_t;
      Str   : String);
 
+  -- proc_map : lua_pushstring
   procedure Push_String
     (State : State_t;
      Str   : UB_Strings.Unbounded_String);
 
+  -- proc_map : lua_pushlstring
   procedure Push_String
     (State   : State_t;
      Address : System.Address;
      Size    : Positive);
 
+  -- proc_map : lua_pushclosure
   procedure Push_User_Closure
     (State      : State_t;
      Func       : User_Function_t;
      Num_Params : Integer);
 
+  -- proc_map : lua_pushclosure
   procedure Push_User_Function
     (State : State_t;
      Func  : User_Function_t);
 
   -- New functions
 
+  -- proc_map : lua_createtable
   procedure New_Table (State : State_t);
 
+  -- proc_map : lua_newthread
   function New_Thread (State : State_t) return State_t;
 
   -- Get functions (lua -> stack)
 
+  -- proc_map : lua_gettable
   procedure Get_Table
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_getmetatable
   function Get_Metatable
     (State : State_t;
      Index : Integer) return Error_t;
 
+  -- proc_map : lua_rawget
   procedure Raw_Get
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_rawgeti
   procedure Raw_Get_Index
     (State   : State_t;
      Index   : Integer;
      Element : Integer);
 
+  -- proc_map : lua_getfield
   procedure Get_Field
     (State : State_t;
      Index : Integer;
      Key   : ICS.chars_ptr);
 
+  -- proc_map : lua_getfield
   procedure Get_Field
     (State : State_t;
      Index : Integer;
      Key   : String);
 
+  -- proc_map : lua_getfield
   procedure Get_Field
     (State : State_t;
      Index : Integer;
      Key   : UB_Strings.Unbounded_String);
 
+  -- proc_map : lua_getfield
   procedure Get_Global
     (State : State_t;
      Key   : ICS.chars_ptr);
 
+  -- proc_map : lua_getfield
   procedure Get_Global
     (State : State_t;
      Key   : String);
 
+  -- proc_map : lua_getfield
   procedure Get_Global
     (State : State_t;
      Key   : UB_Strings.Unbounded_String);
 
+  -- proc_map : lua_getfenv
   procedure Get_FEnv
     (State : State_t;
      Index : Integer);
 
   -- Set functions (stack -> lua)
 
+  -- proc_map : lua_settable
   procedure Set_Table
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_setmetatable
   function Set_Metatable
     (State : State_t;
      Index : Integer) return Error_t;
 
+  -- proc_map : lua_rawset
   procedure Raw_Set
     (State : State_t;
      Index : Integer);
 
+  -- proc_map : lua_rawseti
   procedure Raw_Set_Index
     (State   : State_t;
      Index   : Integer;
      Element : Integer);
 
+  -- proc_map : lua_setfield
   procedure Set_Field
     (State : State_t;
      Index : Integer;
      Key   : ICS.chars_ptr);
 
+  -- proc_map : lua_setfield
   procedure Set_Field
     (State : State_t;
      Index : Integer;
      Key   : String);
 
+  -- proc_map : lua_setfield
   procedure Set_Field
     (State : State_t;
      Index : Integer;
      Key   : UB_Strings.Unbounded_String);
 
+  -- proc_map : lua_setfield
   procedure Set_Global
     (State : State_t;
      Key   : ICS.chars_ptr);
 
+  -- proc_map : lua_setfield
   procedure Set_Global
     (State : State_t;
      Key   : String);
 
+  -- proc_map : lua_setfield
   procedure Set_Global
     (State : State_t;
      Key   : UB_Strings.Unbounded_String);
 
+  -- proc_map : lua_setfenv
   function Set_FEnv
     (State : State_t;
      Index : Integer) return Error_t;
 
   -- Load functions
 
+  -- proc_map : lua_load
   function Load_Buffer
    (State  : State_t;
     Buffer : ICS.chars_ptr;
     Size   : IC.size_t;
     Name   : String) return Error_t;
 
+  -- proc_map : lua_load
   function Load_Buffer
    (State  : State_t;
     Buffer : String;
     Size   : Natural;
     Name   : String) return Error_t;
 
+  -- proc_map : lua_load
   function Load_Buffer
    (State  : State_t;
     Buffer : UB_Strings.Unbounded_String;
     Name   : String) return Error_t;
 
+  -- proc_map : lua_load
   function Load_File
     (State : State_t;
      File  : String) return Error_t;
 
+  -- proc_map : lua_load
   function Load_String
     (State  : State_t;
      Buffer : String) return Error_t;
@@ -412,10 +476,12 @@ package Lua is
 
   -- Coroutines
 
+  -- proc_map : lua_resume
   function Resume
     (State         : State_t;
      Num_Arguments : Integer) return Error_Message_t;
 
+  -- proc_map : lua_yield
   function Yield
     (State       : State_t;
      Num_Results : Integer_t) return Integer_t;
@@ -423,6 +489,7 @@ package Lua is
 
   -- Misc
 
+  -- proc_map : lua_concat
   procedure Concat
     (State : State_t;
      N     : Natural);
@@ -436,15 +503,18 @@ package Lua is
     (State : State_t;
      Count : Integer);
 
+  -- proc_map : lua_next
   function Next
     (State : State_t;
      Index : Integer) return Integer;
 
+  -- proc_map : luaL_ref
   function Reference
     (State : State_t;
      Table : Integer) return Object_Ref_t;
   pragma Import (C, Reference, "luaL_ref");
 
+  -- proc_map : luaL_unref
   procedure Unreference
     (State : State_t;
      Table : Integer;
@@ -459,11 +529,13 @@ package Lua is
 
   -- Lua calls
 
+  -- proc_map : lua_call
   procedure Call
     (State         : State_t;
      Num_Arguments : Integer;
      Num_Results   : Integer);
 
+  -- proc_map : lua_pcall
   function PCall
    (State         : State_t;
     Num_Arguments : Integer;
@@ -476,6 +548,7 @@ package Lua is
     Num_Results   : Integer;
     Error_Func    : Integer) return Error_t renames PCall;
 
+  -- proc_map : lua_error
   procedure Error (State : State_t);
   pragma No_Return (Error);
 
@@ -487,12 +560,14 @@ package Lua is
 
   -- Debug hooks
 
+  -- proc_map : lua_sethook
   procedure Set_Hook
    (State : State_t;
     Func  : Hook_t;
     AMask : Mask_t;
     Count : Integer);
 
+  -- proc_map : lua_gethookmask
   function Get_Hook_Mask (State : State_t) return Mask_t;
 
   -- Generic typed loading.
