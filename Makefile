@@ -241,7 +241,7 @@ cc-compile:\
 conf-cc conf-cctype conf-systype conf-cflags conf-ccfflist flags-lua
 
 cc-link:\
-conf-ld conf-ldtype conf-systype conf-ldfflist libs-lua-S
+conf-ld conf-ldtype conf-systype conf-ldfflist libs-lua-S libs-math libs-dlopen
 
 cc-slib:\
 conf-systype
@@ -251,11 +251,11 @@ mk-adatype
 	./mk-adatype > conf-adatype.tmp && mv conf-adatype.tmp conf-adatype
 
 conf-cctype:\
-conf-cc conf-cc mk-cctype
+conf-cc mk-cctype
 	./mk-cctype > conf-cctype.tmp && mv conf-cctype.tmp conf-cctype
 
 conf-ldtype:\
-conf-ld conf-ld mk-ldtype
+conf-ld mk-ldtype
 	./mk-ldtype > conf-ldtype.tmp && mv conf-ldtype.tmp conf-ldtype
 
 conf-sosuffix:\
