@@ -1,1 +1,3 @@
 libs-lua-S
+libs-math
+libs-dlopen

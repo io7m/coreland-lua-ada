@@ -14,3 +14,4 @@
 20090405 code: Check_Stack -> Boolean.
 20090406 code: *Set_Int -> *Set_Index.
 20090503 version: lua-ada 5.1.4
+20090504 code: add libs-math and libs-dlopen to conf-ldfflist.
