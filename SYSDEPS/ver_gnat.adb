@@ -4,105 +4,105 @@ with GNAT.Regpat;
 with Ada.Text_IO;
 with Ada.Strings.Fixed;
 with Ada.Strings;
-procedure ver_GNAT is
+procedure Ver_GNAT is
   --
   -- gnatver.ads
   --
-  type variant_t is
+  type Variant_t is
     (GNAT_UNKNOWN,
      GNAT_FSF,
      GNAT_GPL,
      GNAT_PRO,
      GNAT_GAP);
-  type version_t is record
-    variant : variant_t := GNAT_UNKNOWN;
-    major   : Natural   := 0;
-    minor   : Natural   := 0;
-    patch   : Natural   := 0;
+  type Version_t is record
+    Variant : Variant_t := GNAT_UNKNOWN;
+    Major   : Natural   := 0;
+    Minor   : Natural   := 0;
+    Patch   : Natural   := 0;
   end record;
-  procedure decode
-    (version : out version_t;
-     image   : in String);
-  procedure decode_current
-    (version : out version_t);
+  procedure Decode
+    (Version : out Version_t;
+     Image   : in String);
+  procedure Decode_Current
+    (Version : out Version_t);
   --
   -- gnatver.adb
   --
-  package ver is new GNAT.Compiler_Version;
+  package Ver is new GNAT.Compiler_Version;
   use type GNAT.Regpat.Match_Location;
-  regex_FSF : constant String := "^(GNAT Version: ){0,1}([0-9]).([0-9]).([0-9])";
-  regex_GPL : constant String := "^(GNAT Version: ){0,1}GPL [0-9]+ \(([0-9]{4})([0-9]{2})([0-9]{2})\)";
-  regex_GAP : constant String := "^(GNAT Version: ){0,1}GAP [0-9]+ \(([0-9]{4})([0-9]{2})([0-9]{2})\)";
-  regex_Pro : constant String := "^(GNAT Version: ){0,1}Pro ([0-9]).([0-9]).([0-9])";
-  procedure decode
-    (version : out version_t;
-     image   : in String)
+  Regex_FSF : constant String := "^(GNAT Version: ){0,1}([0-9]).([0-9]).([0-9])";
+  Regex_GPL : constant String := "^(GNAT Version: ){0,1}GPL [0-9]+ \(([0-9]{4})([0-9]{2})([0-9]{2})\)";
+  Regex_GAP : constant String := "^(GNAT Version: ){0,1}GAP [0-9]+ \(([0-9]{4})([0-9]{2})([0-9]{2})\)";
+  Regex_Pro : constant String := "^(GNAT Version: ){0,1}Pro ([0-9]).([0-9]).([0-9])";
+  procedure Decode
+    (Version : out Version_t;
+     Image   : in String)
   is
-    matches : GNAT.Regpat.Match_Array (0 .. 4);
+    Matches : GNAT.Regpat.Match_Array (0 .. 4);
   begin
     -- check FSF
     GNAT.Regpat.Match
-      (expression => regex_FSF,
-       data       => image,
-       matches    => matches);
-    if matches (0) /= GNAT.Regpat.No_Match then
-      version.variant := GNAT_FSF;
-      version.major   := Natural'Value (image (matches (2).First ..  matches (2).Last));
-      version.minor   := Natural'Value (image (matches (3).First ..  matches (3).Last));
-      version.patch   := Natural'Value (image (matches (4).First ..  matches (4).Last));
+      (Expression => Regex_FSF,
+       Data       => Image,
+       Matches    => Matches);
+    if Matches (0) /= GNAT.Regpat.No_Match then
+      Version.Variant := GNAT_FSF;
+      Version.Major   := Natural'Value (Image (Matches (2).First ..  Matches (2).Last));
+      Version.Minor   := Natural'Value (Image (Matches (3).First ..  Matches (3).Last));
+      Version.Patch   := Natural'Value (Image (Matches (4).First ..  Matches (4).Last));
     end if;
     -- check GPL
     GNAT.Regpat.Match
-      (expression => regex_GPL,
-       data       => image,
-       matches    => matches);
-    if matches (0) /= GNAT.Regpat.No_Match then
-      version.variant := GNAT_GPL;
-      version.major   := Natural'Value (image (matches (2).First ..  matches (2).Last));
-      version.minor   := Natural'Value (image (matches (3).First ..  matches (3).Last));
-      version.patch   := Natural'Value (image (matches (4).First ..  matches (4).Last));
+      (Expression => Regex_GPL,
+       Data       => Image,
+       Matches    => Matches);
+    if Matches (0) /= GNAT.Regpat.No_Match then
+      Version.Variant := GNAT_GPL;
+      Version.Major   := Natural'Value (Image (Matches (2).First ..  Matches (2).Last));
+      Version.Minor   := Natural'Value (Image (Matches (3).First ..  Matches (3).Last));
+      Version.Patch   := Natural'Value (Image (Matches (4).First ..  Matches (4).Last));
     end if;
     -- check GAP
     GNAT.Regpat.Match
-      (expression => regex_GAP,
-       data       => image,
-       matches    => matches);
-    if matches (0) /= GNAT.Regpat.No_Match then
-      version.variant := GNAT_GAP;
-      version.major   := Natural'Value (image (matches (2).First ..  matches (2).Last));
-      version.minor   := Natural'Value (image (matches (3).First ..  matches (3).Last));
-      version.patch   := Natural'Value (image (matches (4).First ..  matches (4).Last));
+      (Expression => Regex_GAP,
+       Data       => Image,
+       Matches    => Matches);
+    if Matches (0) /= GNAT.Regpat.No_Match then
+      Version.Variant := GNAT_GAP;
+      Version.Major   := Natural'Value (Image (Matches (2).First ..  Matches (2).Last));
+      Version.Minor   := Natural'Value (Image (Matches (3).First ..  Matches (3).Last));
+      Version.Patch   := Natural'Value (Image (Matches (4).First ..  Matches (4).Last));
     end if;
     -- check Pro
     GNAT.Regpat.Match
-      (expression => regex_Pro,
-       data       => image,
-       matches    => matches);
-    if matches (0) /= GNAT.Regpat.No_Match then
-      version.variant := GNAT_PRO;
-      version.major   := Natural'Value (image (matches (2).First ..  matches (2).Last));
-      version.minor   := Natural'Value (image (matches (3).First ..  matches (3).Last));
-      version.patch   := Natural'Value (image (matches (4).First ..  matches (4).Last));
+      (Expression => Regex_Pro,
+       Data       => Image,
+       Matches    => Matches);
+    if Matches (0) /= GNAT.Regpat.No_Match then
+      Version.Variant := GNAT_PRO;
+      Version.Major   := Natural'Value (Image (Matches (2).First ..  Matches (2).Last));
+      Version.Minor   := Natural'Value (Image (Matches (3).First ..  Matches (3).Last));
+      Version.Patch   := Natural'Value (Image (Matches (4).First ..  Matches (4).Last));
     end if;
-  end decode;
-  procedure decode_current
-    (version : out version_t) is
+  end Decode;
+  procedure Decode_Current
+    (Version : out Version_t) is
   begin
-    decode
-      (version => version,
-       image   => ver.Version);
-  end decode_current;
-  -- ver_GNAT.adb
-  function To_String (num : Integer) return String is
+    Decode
+      (Version => Version,
+       Image   => Ver.Version);
+  end Decode_Current;
+  -- ver_gnat.adb
+  function To_String (Number : Integer) return String is
   begin
-    return Ada.Strings.Fixed.Trim (Integer'Image (num), Ada.Strings.Left);
+    return Ada.Strings.Fixed.Trim (Integer'Image (Number), Ada.Strings.Left);
   end To_String;
-  version : version_t;
+  Version : Version_t;
 begin
-  decode_current (version);
+  Decode_Current (Version);
   Ada.Text_IO.Put_Line
-    (variant_t'Image (version.variant) & " " &
-     To_String (version.major) & "." &
-     To_String (version.minor) & "." &
-     To_String (version.patch));
-end ver_GNAT;
+    (Variant_t'Image (Version.Variant) & " " &
+     To_String (Version.Major) & "." &
+     To_String (Version.Minor) & "." &
+     To_String (Version.Patch));
+end Ver_GNAT;
