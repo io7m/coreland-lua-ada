@@ -30,8 +30,10 @@ then
   if [ $f -eq 1 ]; then feat="${feat} SYSDEP_CPU_EXT_SSE2"; fi
   f=`${SYSDEP_DIR_RELATIVE}./sd-cpuidx86 sse3`
   if [ $f -eq 1 ]; then feat="${feat} SYSDEP_CPU_EXT_SSE3"; fi
-  f=`${SYSDEP_DIR_RELATIVE}./sd-cpuidx86 sse4`
-  if [ $f -eq 1 ]; then feat="${feat} SYSDEP_CPU_EXT_SSE4"; fi
+  f=`${SYSDEP_DIR_RELATIVE}./sd-cpuidx86 sse4.1`
+  if [ $f -eq 1 ]; then feat="${feat} SYSDEP_CPU_EXT_SSE4_1"; fi
+  f=`${SYSDEP_DIR_RELATIVE}./sd-cpuidx86 sse4.2`
+  if [ $f -eq 1 ]; then feat="${feat} SYSDEP_CPU_EXT_SSE4_2"; fi
 fi
  
 echo "${feat}"
