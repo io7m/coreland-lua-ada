@@ -276,10 +276,10 @@ cc-compile ctxt/bindir.c
 	./cc-compile ctxt/bindir.c
 
 ctxt/ctxt.a:\
-cc-slib ctxt/ctxt.sld ctxt/bindir.o ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o \
-ctxt/slibdir.o ctxt/version.o
-	./cc-slib ctxt/ctxt ctxt/bindir.o ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o \
-	ctxt/slibdir.o ctxt/version.o
+cc-slib ctxt/ctxt.sld ctxt/bindir.o ctxt/dlibdir.o ctxt/fakeroot.o \
+ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o ctxt/version.o
+	./cc-slib ctxt/ctxt ctxt/bindir.o ctxt/dlibdir.o ctxt/fakeroot.o ctxt/incdir.o \
+	ctxt/repos.o ctxt/slibdir.o ctxt/version.o
 
 # ctxt/dlibdir.c.mff
 ctxt/dlibdir.c: mk-ctxt conf-dlibdir
