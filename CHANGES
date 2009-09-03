@@ -16,3 +16,4 @@
 20090503 version: lua-ada 5.1.4
 20090504 code: add libs-math and libs-dlopen to conf-ldfflist.
 20090903 code: updated installer.
+20090903 version: lua-ada 5.1.41
