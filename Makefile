@@ -13,13 +13,13 @@ UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali UNIT_TESTS/loadstring1.o \
 UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
 UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/raiser.ali \
 UNIT_TESTS/raiser.o UNIT_TESTS/utest.ali UNIT_TESTS/utest.o ctxt/bindir.o \
-ctxt/ctxt.a ctxt/dlibdir.o ctxt/incdir.o ctxt/repos.o ctxt/slibdir.o \
-ctxt/version.o deinstaller deinstaller.o install-core.o install-error.o \
-install-posix.o install-win32.o install.a installer installer.o instchk \
-instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a lua-check-exception \
-lua-check_raise.ali lua-check_raise.o lua-config.ali lua-config.o lua-ext.o \
-lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o \
-lua_check_exception.ali lua_check_exception.o
+ctxt/ctxt.a ctxt/dlibdir.o ctxt/fakeroot.o ctxt/incdir.o ctxt/repos.o \
+ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o install-core.o \
+install-error.o install-posix.o install-win32.o install.a installer installer.o \
+instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a \
+lua-check-exception lua-check_raise.ali lua-check_raise.o lua-config.ali \
+lua-config.o lua-ext.o lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o \
+lua.ali lua.o lua_check_exception.ali lua_check_exception.o
 
 # Mkf-deinstall
 deinstall: deinstaller conf-sosuffix
@@ -290,6 +290,15 @@ ctxt/dlibdir.o:\
 cc-compile ctxt/dlibdir.c
 	./cc-compile ctxt/dlibdir.c
 
+# ctxt/fakeroot.c.mff
+ctxt/fakeroot.c: mk-ctxt conf-fakeroot
+	rm -f ctxt/fakeroot.c
+	./mk-ctxt ctxt_fakeroot < conf-fakeroot > ctxt/fakeroot.c
+
+ctxt/fakeroot.o:\
+cc-compile ctxt/fakeroot.c
+	./cc-compile ctxt/fakeroot.c
+
 # ctxt/incdir.c.mff
 ctxt/incdir.c: mk-ctxt conf-incdir
 	rm -f ctxt/incdir.c
@@ -331,7 +340,7 @@ cc-link deinstaller.ld deinstaller.o insthier.o install.a ctxt/ctxt.a
 	./cc-link deinstaller deinstaller.o insthier.o install.a ctxt/ctxt.a
 
 deinstaller.o:\
-cc-compile deinstaller.c install.h
+cc-compile deinstaller.c install.h ctxt.h
 	./cc-compile deinstaller.c
 
 install-core.o:\
@@ -364,7 +373,7 @@ cc-link installer.ld installer.o insthier.o install.a ctxt/ctxt.a
 	./cc-link installer installer.o insthier.o install.a ctxt/ctxt.a
 
 installer.o:\
-cc-compile installer.c install.h
+cc-compile installer.c ctxt.h install.h
 	./cc-compile installer.c
 
 instchk:\
@@ -372,7 +381,7 @@ cc-link instchk.ld instchk.o insthier.o install.a ctxt/ctxt.a
 	./cc-link instchk instchk.o insthier.o install.a ctxt/ctxt.a
 
 instchk.o:\
-cc-compile instchk.c install.h
+cc-compile instchk.c ctxt.h install.h
 	./cc-compile instchk.c
 
 insthier.o:\
@@ -490,15 +499,15 @@ obj_clean:
 	UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
 	UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/raiser.ali \
 	UNIT_TESTS/raiser.o UNIT_TESTS/utest.ali UNIT_TESTS/utest.o ctxt/bindir.c \
-	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/incdir.c \
-	ctxt/incdir.o ctxt/repos.c ctxt/repos.o ctxt/slibdir.c ctxt/slibdir.o \
-	ctxt/version.c ctxt/version.o deinstaller deinstaller.o install-core.o \
-	install-error.o install-posix.o install-win32.o install.a installer installer.o \
-	instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a \
-	lua-check-exception
-	rm -f lua-check_raise.ali lua-check_raise.o lua-config.ads lua-config.ali \
-	lua-config.o lua-ext.o lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o \
-	lua.ali lua.o lua_check_exception.ali lua_check_exception.o
+	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/fakeroot.c \
+	ctxt/fakeroot.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
+	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o deinstaller \
+	deinstaller.o install-core.o install-error.o install-posix.o install-win32.o \
+	install.a installer installer.o instchk instchk.o insthier.o lua-ada-conf
+	rm -f lua-ada-conf.o lua-ada.a lua-check-exception lua-check_raise.ali \
+	lua-check_raise.o lua-config.ads lua-config.ali lua-config.o lua-ext.o \
+	lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o lua.ali lua.o \
+	lua_check_exception.ali lua_check_exception.o
 ext_clean:
 	rm -f conf-adatype conf-cctype conf-ldtype conf-sosuffix conf-systype mk-ctxt
 
