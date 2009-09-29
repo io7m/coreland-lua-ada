@@ -761,6 +761,13 @@ package body Lua is
     end if;
   end To_String;
 
+  function To_Unbounded_String
+    (State : State_t;
+     Index : Integer) return UB_Strings.Unbounded_String is
+  begin
+    return UB_Strings.To_Unbounded_String (To_String (State, Index));
+  end To_Unbounded_String;
+
   function To_Boolean
     (State : State_t;
      Index : Integer) return Boolean is

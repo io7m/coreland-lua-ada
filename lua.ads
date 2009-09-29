@@ -282,6 +282,11 @@ package Lua is
     (State : State_t;
      Index : Integer) return String;
 
+  -- proc_map : lua_tostring
+  function To_Unbounded_String
+    (State : State_t;
+     Index : Integer) return UB_Strings.Unbounded_String;
+
   -- proc_map : lua_toboolean
   function To_Boolean
     (State : State_t;
