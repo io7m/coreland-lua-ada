@@ -18,9 +18,9 @@ package Lua is
   -- Lua implementation.
   --
 
-  type Integer_t is new IC.int;
+  type    Integer_t is new IC.int;
   subtype Natural_t is Integer_t range 0 .. Integer_t'Last;
-  subtype Number_t is IC.double;
+  subtype Number_t  is IC.double;
 
   type Error_t is
    (Lua_Error_None,
