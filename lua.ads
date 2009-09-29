@@ -312,6 +312,11 @@ package Lua is
     (State : State_t;
      N     : Number_t);
 
+  -- proc_map : lua_pushinteger
+  procedure Push_Integer
+    (State : State_t;
+     I     : Integer_t);
+
   -- proc_map : lua_pushboolean
   procedure Push_Boolean
     (State : State_t;

@@ -170,6 +170,11 @@ package body Lua is
        N     : Number_t);
     pragma Import (C, lua_pushnumber, "lua_pushnumber");
 
+    procedure lua_pushinteger
+      (State : State_t;
+       I     : Integer_t);
+    pragma Import (C, lua_pushinteger, "lua_pushinteger");
+
     procedure lua_pushstring
       (State : State_t;
        Str   : ICS.chars_ptr);
@@ -842,6 +847,13 @@ package body Lua is
   begin
     C_Bindings.lua_pushnumber (State, N);
   end Push_Number;
+
+  procedure Push_Integer
+    (State : State_t;
+     I     : Integer_t) is
+  begin
+    C_Bindings.lua_pushinteger (State, I);
+  end Push_Integer;
 
   procedure Push_Boolean
    (State : State_t;
