@@ -13,7 +13,7 @@ then
 fi
 
 #
-# check if base directory was specified
+# Check if base directory was specified.
 #
 
 BASE_DIR="."
@@ -33,7 +33,7 @@ SYSTYPE=`head -n 1 "${BASE_DIR}/conf-systype"`
 if [ $? -ne 0 ]
 then
   fatal "could not read ${BASE_DIR}/conf-systype"
-fi  
+fi
 ADATYPE=`head -n 1 "${BASE_DIR}/conf-adatype"`
 if [ $? -ne 0 ]
 then
@@ -73,19 +73,13 @@ then
 fi
 
 #
-# compensate for any compiler bugs
+# Compensate for any compiler bugs.
 #
 
 case ${SYSTYPE} in
   DARWIN)
     case ${ADATYPE} in
       GCC)
-        # undefined __UNWIND symbols bug
-        # /usr/local/ada-n.m/bin/gcc -> /usr/local/ada-n.m/lib
-        SED_SUB="s:bin/${ADALINK}$:lib:g"
-        GCC_LIB_PATH="`which ${ADALINK} | sed "${SED_SUB}"`" ||
-          fatal "could not convert GCC_LIB_PATH"
-        ADALDFLAGS="${ADALDFLAGS} ${GCC_LIB_PATH} -largs -lgcc_s.1"
         ;;
       *)
         ;;

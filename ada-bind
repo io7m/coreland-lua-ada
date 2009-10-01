@@ -13,7 +13,7 @@ then
 fi
 
 #
-# check if new base dir was specified
+# Check if new base dir was specified.
 #
 
 BASE_DIR="."

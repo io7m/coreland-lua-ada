@@ -13,7 +13,7 @@ then
 fi
 
 #
-# check if new base dir was specified
+# Check if new base dir was specified.
 #
 
 BASE_DIR="."
@@ -70,10 +70,22 @@ if [ -f "${out}.iff" ]
 then
   for f in `cat "${out}.iff"`
   do
-    targ="`dirname $out`/`dirname $f`/`basename $f`" 
+    targ="`dirname $out`/`dirname $f`/`basename $f`"
     FLAGS="`cat $targ 2>/dev/null`" || fatal "could not read $f"
     ADAFLAGS="${ADAFLAGS} ${FLAGS}"
   done
+fi
+
+#
+# Read configuration pragma file, if present.
+#
+
+if [ -f conf-adapragma ]
+then
+  case ${ADATYPE} in
+    GCC) ADAFLAGS="${ADAFLAGS} -gnatec=conf-adapragma";;
+    *) ;;
+  esac
 fi
 
 rm -f "${out}.ali"
