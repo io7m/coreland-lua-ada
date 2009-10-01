@@ -92,13 +92,10 @@ lua-ext.o
 	./ada-bind UNIT_TESTS/except1.ali
 	./ada-link UNIT_TESTS/except1 UNIT_TESTS/except1.ali lua-ext.o
 
-UNIT_TESTS/except1.ali:\
+UNIT_TESTS/except1.o UNIT_TESTS/except1.ali:\
 ada-compile UNIT_TESTS/except1.adb lua.ali lua-config.ali UNIT_TESTS/raiser.ali \
 UNIT_TESTS/utest.ali
 	./ada-compile UNIT_TESTS/except1.adb
-
-UNIT_TESTS/except1.o:\
-UNIT_TESTS/except1.ali
 
 UNIT_TESTS/execfile:\
 ada-bind ada-link UNIT_TESTS/execfile.ald UNIT_TESTS/execfile.ali \
@@ -106,12 +103,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/execfile.ali
 	./ada-link UNIT_TESTS/execfile UNIT_TESTS/execfile.ali lua-ext.o
 
-UNIT_TESTS/execfile.ali:\
+UNIT_TESTS/execfile.o UNIT_TESTS/execfile.ali:\
 ada-compile UNIT_TESTS/execfile.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/execfile.adb
-
-UNIT_TESTS/execfile.o:\
-UNIT_TESTS/execfile.ali
 
 UNIT_TESTS/execstring:\
 ada-bind ada-link UNIT_TESTS/execstring.ald UNIT_TESTS/execstring.ali \
@@ -119,12 +113,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/execstring.ali
 	./ada-link UNIT_TESTS/execstring UNIT_TESTS/execstring.ali lua-ext.o
 
-UNIT_TESTS/execstring.ali:\
+UNIT_TESTS/execstring.o UNIT_TESTS/execstring.ali:\
 ada-compile UNIT_TESTS/execstring.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/execstring.adb
-
-UNIT_TESTS/execstring.o:\
-UNIT_TESTS/execstring.ali
 
 UNIT_TESTS/loadbase:\
 ada-bind ada-link UNIT_TESTS/loadbase.ald UNIT_TESTS/loadbase.ali \
@@ -132,12 +123,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadbase.ali
 	./ada-link UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali lua-ext.o
 
-UNIT_TESTS/loadbase.ali:\
+UNIT_TESTS/loadbase.o UNIT_TESTS/loadbase.ali:\
 ada-compile UNIT_TESTS/loadbase.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadbase.adb
-
-UNIT_TESTS/loadbase.o:\
-UNIT_TESTS/loadbase.ali
 
 UNIT_TESTS/loadfile1:\
 ada-bind ada-link UNIT_TESTS/loadfile1.ald UNIT_TESTS/loadfile1.ali \
@@ -145,12 +133,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadfile1.ali
 	./ada-link UNIT_TESTS/loadfile1 UNIT_TESTS/loadfile1.ali lua-ext.o
 
-UNIT_TESTS/loadfile1.ali:\
+UNIT_TESTS/loadfile1.o UNIT_TESTS/loadfile1.ali:\
 ada-compile UNIT_TESTS/loadfile1.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadfile1.adb
-
-UNIT_TESTS/loadfile1.o:\
-UNIT_TESTS/loadfile1.ali
 
 UNIT_TESTS/loadfile2:\
 ada-bind ada-link UNIT_TESTS/loadfile2.ald UNIT_TESTS/loadfile2.ali \
@@ -158,12 +143,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadfile2.ali
 	./ada-link UNIT_TESTS/loadfile2 UNIT_TESTS/loadfile2.ali lua-ext.o
 
-UNIT_TESTS/loadfile2.ali:\
+UNIT_TESTS/loadfile2.o UNIT_TESTS/loadfile2.ali:\
 ada-compile UNIT_TESTS/loadfile2.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadfile2.adb
-
-UNIT_TESTS/loadfile2.o:\
-UNIT_TESTS/loadfile2.ali
 
 UNIT_TESTS/loadstring1:\
 ada-bind ada-link UNIT_TESTS/loadstring1.ald UNIT_TESTS/loadstring1.ali \
@@ -171,12 +153,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadstring1.ali
 	./ada-link UNIT_TESTS/loadstring1 UNIT_TESTS/loadstring1.ali lua-ext.o
 
-UNIT_TESTS/loadstring1.ali:\
+UNIT_TESTS/loadstring1.o UNIT_TESTS/loadstring1.ali:\
 ada-compile UNIT_TESTS/loadstring1.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadstring1.adb
-
-UNIT_TESTS/loadstring1.o:\
-UNIT_TESTS/loadstring1.ali
 
 UNIT_TESTS/loadstring2:\
 ada-bind ada-link UNIT_TESTS/loadstring2.ald UNIT_TESTS/loadstring2.ali \
@@ -184,12 +163,9 @@ UNIT_TESTS/utest.ali lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/loadstring2.ali
 	./ada-link UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali lua-ext.o
 
-UNIT_TESTS/loadstring2.ali:\
+UNIT_TESTS/loadstring2.o UNIT_TESTS/loadstring2.ali:\
 ada-compile UNIT_TESTS/loadstring2.adb UNIT_TESTS/utest.ali lua.ali lua-lib.ali
 	./ada-compile UNIT_TESTS/loadstring2.adb
-
-UNIT_TESTS/loadstring2.o:\
-UNIT_TESTS/loadstring2.ali
 
 UNIT_TESTS/open:\
 ada-bind ada-link UNIT_TESTS/open.ald UNIT_TESTS/open.ali UNIT_TESTS/utest.ali \
@@ -197,29 +173,20 @@ lua.ali lua-lib.ali lua-ext.o
 	./ada-bind UNIT_TESTS/open.ali
 	./ada-link UNIT_TESTS/open UNIT_TESTS/open.ali lua-ext.o
 
-UNIT_TESTS/open.ali:\
+UNIT_TESTS/open.o UNIT_TESTS/open.ali:\
 ada-compile UNIT_TESTS/open.adb UNIT_TESTS/utest.ali lua.ali
 	./ada-compile UNIT_TESTS/open.adb
-
-UNIT_TESTS/open.o:\
-UNIT_TESTS/open.ali
 
 UNIT_TESTS/raiser.ads:\
 lua.ali
 
-UNIT_TESTS/raiser.ali:\
+UNIT_TESTS/raiser.o UNIT_TESTS/raiser.ali:\
 ada-compile UNIT_TESTS/raiser.adb UNIT_TESTS/raiser.ads
 	./ada-compile UNIT_TESTS/raiser.adb
 
-UNIT_TESTS/raiser.o:\
-UNIT_TESTS/raiser.ali
-
-UNIT_TESTS/utest.ali:\
+UNIT_TESTS/utest.o UNIT_TESTS/utest.ali:\
 ada-compile UNIT_TESTS/utest.adb UNIT_TESTS/utest.ads
 	./ada-compile UNIT_TESTS/utest.adb
-
-UNIT_TESTS/utest.o:\
-UNIT_TESTS/utest.ali
 
 ada-bind:\
 conf-adabind conf-systype conf-adatype conf-adafflist flags-cwd
@@ -408,23 +375,17 @@ lua-check_raise.ali lua-ext.o
 	./ada-bind lua_check_exception.ali
 	./ada-link lua-check-exception lua_check_exception.ali lua-ext.o
 
-lua-check_raise.ali:\
+lua-check_raise.o lua-check_raise.ali:\
 ada-compile lua-check_raise.adb lua-check_raise.ads
 	./ada-compile lua-check_raise.adb
-
-lua-check_raise.o:\
-lua-check_raise.ali
 
 # lua-config.ads.mff
 lua-config.ads: lua-config.sh lua-check-exception
 	./lua-config.sh > lua-config.ads.tmp && mv lua-config.ads.tmp lua-config.ads
 
-lua-config.ali:\
+lua-config.o lua-config.ali:\
 ada-compile lua-config.ads
 	./ada-compile lua-config.ads
-
-lua-config.o:\
-lua-config.ali
 
 lua-ext.o:\
 cc-compile lua-ext.c
@@ -433,36 +394,24 @@ cc-compile lua-ext.c
 lua-lib.ads:\
 lua.ali
 
-lua-lib.ali:\
+lua-lib.o lua-lib.ali:\
 ada-compile lua-lib.adb lua.ali lua-lib.ads
 	./ada-compile lua-lib.adb
-
-lua-lib.o:\
-lua-lib.ali
 
 lua-user_data.ads:\
 lua.ali lua-lib.ali
 
-lua-user_data.ali:\
+lua-user_data.o lua-user_data.ali:\
 ada-compile lua-user_data.adb lua-user_data.ads
 	./ada-compile lua-user_data.adb
 
-lua-user_data.o:\
-lua-user_data.ali
-
-lua.ali:\
+lua.o lua.ali:\
 ada-compile lua.adb lua.ads
 	./ada-compile lua.adb
 
-lua.o:\
-lua.ali
-
-lua_check_exception.ali:\
+lua_check_exception.o lua_check_exception.ali:\
 ada-compile lua_check_exception.adb lua.ali lua-check_raise.ali
 	./ada-compile lua_check_exception.adb
-
-lua_check_exception.o:\
-lua_check_exception.ali
 
 mk-adatype:\
 conf-adacomp conf-systype
