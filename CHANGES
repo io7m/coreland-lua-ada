@@ -19,3 +19,5 @@
 20090903 version: lua-ada 5.1.41
 20090929 code: add To_Unbounded_String form.
 20090929 code: add Push_Integer.
+20091028 code: new SYSDEPS.
+20091028 code: check-deps in build.
