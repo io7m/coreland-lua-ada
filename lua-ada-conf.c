@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "ctxt.h"
 
-#include "_sysinfo.h"
+#include "_sd_sysinfo.h"
 
 static unsigned int flag;
 static int str_diff(register const char *, register const char *);
