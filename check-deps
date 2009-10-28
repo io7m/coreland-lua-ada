@@ -1,0 +1,43 @@
+#!/bin/sh
+
+EXIT_VALUE=0
+
+fatal()
+{
+  echo "check-deps: fatal: $1" 1>&2
+  exit 1
+}
+
+require_fail()
+{
+  PACKAGE_NAME="$1"
+  PACKAGE_URL="$2"
+  MODULE_NAME="$3"
+  FILE_NAME="$4"
+
+  echo "check-deps: error: ${PACKAGE_NAME} (${PACKAGE_URL}) required but not located" 1>&2
+  echo "check-deps: error: SYSDEPS module ${MODULE_NAME}, file ${FILE_NAME}" 1>&2
+
+  EXIT_VALUE=1
+}
+
+required()
+{
+  MODULE_NAME="$1"
+  FILE_NAME="$2"
+  PACKAGE_NAME="$3"
+
+  ./sd-status-is "${MODULE_NAME}" succeeded
+  if [ $? -ne 0 ]
+  then
+    package_url=`cat modules/${MODULE_NAME}/package_url` || package_url="missing URL"
+    require_fail "${PACKAGE_NAME}" "${package_url}" "${MODULE_NAME}" "${FILE_NAME}"
+  fi
+}
+
+cd SYSDEPS || fatal "could not change directory to SYSDEPS"
+
+required lua-flags  flags-lua  "Lua"
+required lua-libs-S libs-lua-S "Lua"
+
+exit ${EXIT_VALUE}

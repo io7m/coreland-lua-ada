@@ -54,5 +54,4 @@ case ${SYSDEP_OS} in
     ;;
 esac
 
-SYSDEP_ERROR "manual/custom search failed"
-${SYSDEP_UTIL_EXIT} 0 
+SYSDEP_FATAL "manual/custom search failed"

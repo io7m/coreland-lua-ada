@@ -3,7 +3,7 @@
 default: all
 
 all:\
-UNIT_TESTS/except1 UNIT_TESTS/except1.ali UNIT_TESTS/except1.o \
+local UNIT_TESTS/except1 UNIT_TESTS/except1.ali UNIT_TESTS/except1.o \
 UNIT_TESTS/execfile UNIT_TESTS/execfile.ali UNIT_TESTS/execfile.o \
 UNIT_TESTS/execstring UNIT_TESTS/execstring.ali UNIT_TESTS/execstring.o \
 UNIT_TESTS/loadbase UNIT_TESTS/loadbase.ali UNIT_TESTS/loadbase.o \
@@ -39,51 +39,61 @@ install-dryrun: installer conf-sosuffix
 install-check: instchk conf-sosuffix
 	./instchk
 
+# Mkf-local
+local: flags-lua libs-lua-S
+	./check-deps
+
+local_pre:
+local_clean:
+
 # Mkf-test
 tests:
 	(cd UNIT_TESTS && make)
 tests_clean:
 	(cd UNIT_TESTS && make clean)
 
-# -- SYSDEPS start
+#----------------------------------------------------------------------
+# SYSDEPS start
+
 flags-lua:
 	@echo SYSDEPS lua-flags run create flags-lua 
-	@(cd SYSDEPS/modules/lua-flags && ./run)
+	@(cd SYSDEPS && ./sd-run modules/lua-flags)
 libs-lua-S:
 	@echo SYSDEPS lua-libs-S run create libs-lua-S 
-	@(cd SYSDEPS/modules/lua-libs-S && ./run)
+	@(cd SYSDEPS && ./sd-run modules/lua-libs-S)
 _sd_dlopen.h:
 	@echo SYSDEPS sd-dlopen run create libs-dlopen _sd_dlopen.h 
-	@(cd SYSDEPS/modules/sd-dlopen && ./run)
+	@(cd SYSDEPS && ./sd-run modules/sd-dlopen)
 libs-dlopen: _sd_dlopen.h
-_sysinfo.h:
-	@echo SYSDEPS sysinfo run create _sysinfo.h 
-	@(cd SYSDEPS/modules/sysinfo && ./run)
+_sd_sysinfo.h:
+	@echo SYSDEPS sd-sysinfo run create _sd_sysinfo.h 
+	@(cd SYSDEPS && ./sd-run modules/sd-sysinfo)
 
 
 lua-flags_clean:
 	@echo SYSDEPS lua-flags clean flags-lua 
-	@(cd SYSDEPS/modules/lua-flags && ./clean)
+	@(cd SYSDEPS && ./sd-clean modules/lua-flags)
 lua-libs-S_clean:
 	@echo SYSDEPS lua-libs-S clean libs-lua-S 
-	@(cd SYSDEPS/modules/lua-libs-S && ./clean)
+	@(cd SYSDEPS && ./sd-clean modules/lua-libs-S)
 sd-dlopen_clean:
 	@echo SYSDEPS sd-dlopen clean libs-dlopen _sd_dlopen.h 
-	@(cd SYSDEPS/modules/sd-dlopen && ./clean)
-sysinfo_clean:
-	@echo SYSDEPS sysinfo clean _sysinfo.h 
-	@(cd SYSDEPS/modules/sysinfo && ./clean)
+	@(cd SYSDEPS && ./sd-clean modules/sd-dlopen)
+sd-sysinfo_clean:
+	@echo SYSDEPS sd-sysinfo clean _sd_sysinfo.h 
+	@(cd SYSDEPS && ./sd-clean modules/sd-sysinfo)
 
 
 sysdeps_clean:\
 lua-flags_clean \
 lua-libs-S_clean \
 sd-dlopen_clean \
-sysinfo_clean \
+sd-sysinfo_clean \
 
 
-# -- SYSDEPS end
 
+# SYSDEPS end
+#----------------------------------------------------------------------
 
 UNIT_TESTS/except1:\
 ada-bind ada-link UNIT_TESTS/except1.ald UNIT_TESTS/except1.ali \
@@ -360,7 +370,7 @@ cc-link lua-ada-conf.ld lua-ada-conf.o ctxt/ctxt.a
 	./cc-link lua-ada-conf lua-ada-conf.o ctxt/ctxt.a
 
 lua-ada-conf.o:\
-cc-compile lua-ada-conf.c ctxt.h _sysinfo.h
+cc-compile lua-ada-conf.c ctxt.h _sd_sysinfo.h
 	./cc-compile lua-ada-conf.c
 
 lua-ada.a:\
@@ -435,7 +445,7 @@ conf-systype
 mk-systype:\
 conf-cc conf-ld
 
-clean-all: sysdeps_clean tests_clean obj_clean ext_clean
+clean-all: sysdeps_clean tests_clean local_clean obj_clean ext_clean
 clean: obj_clean
 obj_clean:
 	rm -f UNIT_TESTS/except1 UNIT_TESTS/except1.ali UNIT_TESTS/except1.o \

@@ -1,0 +1,5 @@
+local: flags-lua libs-lua-S
+	./check-deps
+
+local_pre:
+local_clean:
