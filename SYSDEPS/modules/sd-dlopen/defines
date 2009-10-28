@@ -1,0 +1,2 @@
+SD_HAVE_DLOPEN : integer 1 .. 1 : optional
+SD_HAVE_DLFUNC : integer 1 .. 1 : optional

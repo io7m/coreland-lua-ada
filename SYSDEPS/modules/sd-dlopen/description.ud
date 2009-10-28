@@ -1,0 +1,16 @@
+(para "This module does a simple compile-time check to see if
+  the " (item c_function "dlopen()") " and "
+  (item c_function "dlfunc()") " functions are implemented and
+  will additionally detect any linker flags required to use them.")
+
+(para "Example output:")
+
+(para-verbatim example
+"#ifndef _SD_DLOPEN_H
+#define _SD_DLOPEN_H
+
+#define SD_HAVE_DLOPEN 1
+#define SD_HAVE_DLFUNC 1
+
+#endif
+")

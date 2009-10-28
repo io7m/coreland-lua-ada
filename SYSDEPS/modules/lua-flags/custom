@@ -1,0 +1,37 @@
+#!/bin/sh
+
+temp_f="$1"
+temp_sys="$2"
+
+args=""
+file="lua.h"
+
+FLAGS=`${SYSDEP_TRY_MANUAL} "${file}" "${SYSDEP_STDINC}" "-I" 2>&-`
+if [ "x${FLAGS}" != "x" ]
+then
+  ${SYSDEP_UTIL_ECHO} "${FLAGS} -DHAVE_LUA " >> "${temp_f}"
+  ${SYSDEP_UTIL_ECHO} "lua-flags: ${FLAGS} -DHAVE_LUA " >> "${temp_sys}"
+  ${SYSDEP_UTIL_EXIT} 0
+fi
+
+#
+# Lua uses versioned directories.
+#
+
+for DIRECTORY in ${SYSDEP_STDINC}
+do
+  if [ -d "${DIRECTORY}" ]
+  then
+    MAYBE_DIRECTORIES=`ls ${DIRECTORY} | ${SYSDEP_UTIL_GREP} lua`
+    for DIRECTORY_EXT in ${MAYBE_DIRECTORIES}
+    do
+      if [ -f "${DIRECTORY}/${DIRECTORY_EXT}/${file}" ]
+      then
+        ${SYSDEP_UTIL_ECHO} "-I${DIRECTORY}/${DIRECTORY_EXT} -DHAVE_LUA " >> "${temp_f}"
+        ${SYSDEP_UTIL_ECHO} "lua-flags: -I${DIRECTORY}/${DIRECTORY_EXT} -DHAVE_LUA " >> "${temp_sys}"
+        ${SYSDEP_UTIL_EXIT} 0
+      fi
+    done
+  fi
+done
+
