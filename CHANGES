@@ -22,3 +22,4 @@
 20091028 code: new SYSDEPS.
 20091028 code: check-deps in build.
 20091028 version: lua-ada 5.1.42
+20091028 code: updated sysdeps modules for portability fixes.
