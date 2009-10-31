@@ -14,8 +14,8 @@ UNIT_TESTS/loadstring2 UNIT_TESTS/loadstring2.ali UNIT_TESTS/loadstring2.o \
 UNIT_TESTS/open UNIT_TESTS/open.ali UNIT_TESTS/open.o UNIT_TESTS/raiser.ali \
 UNIT_TESTS/raiser.o UNIT_TESTS/utest.ali UNIT_TESTS/utest.o ctxt/bindir.o \
 ctxt/ctxt.a ctxt/dlibdir.o ctxt/fakeroot.o ctxt/incdir.o ctxt/repos.o \
-ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o install-core.o \
-install-error.o install-posix.o install-win32.o install.a installer installer.o \
+ctxt/slibdir.o ctxt/version.o deinstaller deinstaller.o generic-conf.o \
+install-core.o install-posix.o install-win32.o install.a installer installer.o \
 instchk instchk.o insthier.o lua-ada-conf lua-ada-conf.o lua-ada.a \
 lua-check-exception lua-check_raise.ali lua-check_raise.o lua-config.ali \
 lua-config.o lua-ext.o lua-lib.ali lua-lib.o lua-user_data.ali lua-user_data.o \
@@ -320,13 +320,13 @@ deinstaller.o:\
 cc-compile deinstaller.c install.h ctxt.h
 	./cc-compile deinstaller.c
 
+generic-conf.o:\
+cc-compile generic-conf.c ctxt.h
+	./cc-compile generic-conf.c
+
 install-core.o:\
 cc-compile install-core.c install.h
 	./cc-compile install-core.c
-
-install-error.o:\
-cc-compile install-error.c install.h
-	./cc-compile install-error.c
 
 install-posix.o:\
 cc-compile install-posix.c install.h
@@ -337,10 +337,8 @@ cc-compile install-win32.c install.h
 	./cc-compile install-win32.c
 
 install.a:\
-cc-slib install.sld install-core.o install-posix.o install-win32.o \
-install-error.o
-	./cc-slib install install-core.o install-posix.o install-win32.o \
-	install-error.o
+cc-slib install.sld install-core.o install-posix.o install-win32.o
+	./cc-slib install install-core.o install-posix.o install-win32.o
 
 install.h:\
 install_os.h
@@ -461,7 +459,7 @@ obj_clean:
 	ctxt/bindir.o ctxt/ctxt.a ctxt/dlibdir.c ctxt/dlibdir.o ctxt/fakeroot.c \
 	ctxt/fakeroot.o ctxt/incdir.c ctxt/incdir.o ctxt/repos.c ctxt/repos.o \
 	ctxt/slibdir.c ctxt/slibdir.o ctxt/version.c ctxt/version.o deinstaller \
-	deinstaller.o install-core.o install-error.o install-posix.o install-win32.o \
+	deinstaller.o generic-conf.o install-core.o install-posix.o install-win32.o \
 	install.a installer installer.o instchk instchk.o insthier.o lua-ada-conf
 	rm -f lua-ada-conf.o lua-ada.a lua-check-exception lua-check_raise.ali \
 	lua-check_raise.o lua-config.ads lua-config.ali lua-config.o lua-ext.o \
